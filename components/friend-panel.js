@@ -1,31 +1,38 @@
 import { FlatList } from "react-native";
-import { styles } from "../styles";
 import FriendItem from "./friend-item";
+import { useEffect, useState } from "react";
+import * as Contacts from "expo-contacts";
 
 const FriendPanel = () => {
 
-    const DATA = [
-        {
-            id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-            title: "Jon"
-        },
-        {
-            id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-            title: "Stefan"
-        },
-        {
-            id: "58694a0f-3da1-471f-bd96-145571e29d72",
-            title: "Vinzent"
-        }
-    ];
+    const [ contacts, setContacts ] = useState( [] );
+    useEffect( () => {
+        ( async () => {
+            const { status } = await Contacts.requestPermissionsAsync();
+            if ( status === "granted" ) {
+                const { data } = await Contacts.getContactsAsync( {
+                    fields: [ Contacts.PHONE_NUMBERS ]
+                } );
+                if ( data.length > 0 ) {
+                    //TODO filter contacts by people who have our app -> number is in Database
+                    setContacts( data );
+                    console.log( data.length );
+                }
+            }
+        } )();
+    }, [] );
+
 
     return (
-            <FlatList
-                    style={ styles.sidebar }
-                    data={ DATA }
-                    renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
-                    keyExtractor={ item => item.id }
-            />
+            <>
+                <FlatList
+                        data={ contacts }
+                        renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
+                        keyExtractor={ item => {
+                            item?.id?.toString();
+                        } }
+                />
+            </>
     );
 };
 

@@ -3,7 +3,7 @@ import { Text } from "react-native";
 const FriendItem = ( { friendData } ) => {
 
     return (
-            <Text>{ friendData.title }</Text>
+            <Text>{ friendData.name }</Text>
     );
 };
 
