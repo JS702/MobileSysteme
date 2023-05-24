@@ -5,9 +5,7 @@ export const styles = StyleSheet.create( {
         marginTop: "10%"
     },
     sidebar: {
-        position: "absolute",
         height: "100%",
-        width: "20%",
         marginRight: "auto",
         marginLeft: 0,
         backgroundColor: "blue"

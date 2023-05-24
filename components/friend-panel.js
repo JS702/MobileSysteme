@@ -1,10 +1,13 @@
-import { FlatList } from "react-native";
+import { Button, FlatList } from "react-native";
 import FriendItem from "./friend-item";
 import { useEffect, useState } from "react";
 import * as Contacts from "expo-contacts";
+import { styles } from "../styles";
 
 const FriendPanel = () => {
 
+    const [ sidePanelWidth, setSidePanelWidth ] = useState( "0%" );
+    const [ buttonVisibility, setButtonVisibility ] = useState( "" );
     const [ contacts, setContacts ] = useState( [] );
     useEffect( () => {
         ( async () => {
@@ -16,21 +19,25 @@ const FriendPanel = () => {
                 if ( data.length > 0 ) {
                     //TODO filter contacts by people who have our app -> number is in Database
                     setContacts( data );
-                    console.log( data.length );
                 }
             }
         } )();
     }, [] );
 
+    const onButtonPress = () => {
+        setSidePanelWidth( "50%" );
+        setButtonVisibility( "hidden" );
+    };
+
 
     return (
             <>
+                <Button title={ "FriendsButton" } onPress={ onButtonPress }>Freunde</Button>
                 <FlatList
+                        style={ { ...styles.sidebar, width: sidePanelWidth } }
                         data={ contacts }
                         renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
-                        keyExtractor={ item => {
-                            item?.id?.toString();
-                        } }
+                        keyExtractor={ item => item?.id?.toString() }
                 />
             </>
     );
