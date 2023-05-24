@@ -8,6 +8,6 @@ export const styles = StyleSheet.create( {
         height: "100%",
         marginRight: "auto",
         marginLeft: 0,
-        backgroundColor: "blue"
+        backgroundColor: "#69b8f5"
     }
 } );

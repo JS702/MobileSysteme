@@ -1,5 +1,4 @@
-import { SafeAreaView } from "react-native";
-import { styles } from "../styles";
+import { SafeAreaView, StyleSheet } from "react-native";
 import FriendPanel from "./friend-panel";
 import Map from "./map";
 
@@ -11,5 +10,12 @@ const BaseLayout = () => {
             </SafeAreaView>
     );
 };
+
+
+const styles = StyleSheet.create( {
+    baseLayout: {
+        marginTop: "10%"
+    }
+} );
 
 export default BaseLayout;
