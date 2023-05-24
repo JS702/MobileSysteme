@@ -19,7 +19,6 @@
     "react-leaflet": "^4.2.1",
     "react-native": "0.71.7",
     "react-native-contacts": "^7.0.5",
-    "react-native-leaflet-routing": "^1.4.0",
     "react-native-webview": "^12.0.2",
     "typescript": "^4.9.4"
   },
