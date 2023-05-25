@@ -20,6 +20,11 @@ import {
 } from 'react-native-webview/lib/WebViewTypes';
 import LoadingIndicator from '../LoadingIndicator';
 
+import * as Asset from "expo-asset";
+import { Platform } from "react-native";
+import * as FileSystem from "expo-file-system";
+import { cacheDirectory, copyAsync, getInfoAsync, makeDirectoryAsync, uploadAsync } from 'expo-file-system'
+
 const LEAFLET_HTML_SOURCE = () => {
   const [index] = useAssets(
     require('../../android/src/main/assets/leaflet.html')
@@ -35,6 +40,7 @@ const LEAFLET_HTML_SOURCE = () => {
 
   return html;
 };
+
 
 const DEFAULT_MAP_LAYERS = [
   {

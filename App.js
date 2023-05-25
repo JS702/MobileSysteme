@@ -1,10 +1,10 @@
 import BaseLayout from "./components/base-layout";
-import Map from "./components/map";
+import MapWebview from "./components/map/map-webview";
 
 export default function App() {
     return (
-            <BaseLayout/>
-            //<Map/>
+            //<BaseLayout/>
+            <MapWebview/>
     );
 }
 
