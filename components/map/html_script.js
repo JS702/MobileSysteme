@@ -77,6 +77,8 @@ const html_script = `
 
 	map.on('click', onMapClick);
 
+	var routingControl = null;
+
 </script>
 
 

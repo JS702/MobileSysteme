@@ -58,12 +58,23 @@ const mapRef = useRef(null);
 
     const addRoute = (startLat, startLon, endLat, endLon) => {
         mapRef.current.injectJavaScript(`
-        L.Routing.control({
+        if (routingControl != null) {
+            //map.removeControl(routingControl);
+            //routingControl = null;
+        }
+        routingControl = L.Routing.control({
             waypoints: [
               L.latLng(${startLat}, ${startLon}),
               L.latLng(${endLat}, ${endLon})
             ]
           }).addTo(map);
+        `)
+    }
+
+    const removeRoute = () => {
+        mapRef.current.injectJavaScript(`
+        map.removeControl(routingControl);
+        routingControl = null;
         `)
     }
 
@@ -86,6 +97,8 @@ const mapRef = useRef(null);
                 style={styles.Webview}
                 />
             </SafeAreaView>
+
+            {/* DEBUG BUTTONS*/}
             <Button title="Center" onPress={() => {
                 centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
                 setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
@@ -93,8 +106,11 @@ const mapRef = useRef(null);
              <Button title="Add" onPress={() => {
                 addMarker("Friend", ownLocation.lat + 0.001, ownLocation.lng);
                 }}/>
-            <Button title="Route" onPress={() => {
+            <Button title="Start routing" onPress={() => {
                 addRoute(ownLocation.lat, ownLocation.lng, ownLocation.lat + 0.001, ownLocation.lng);
+                }}/>
+            <Button title="Stop routing" onPress={() => {
+                removeRoute();
                 }}/>
         </>
     );
