@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, StatusBar, Button } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location"
@@ -37,8 +37,6 @@ const mapRef = useRef(null);
         Alert.alert("Could not get location!", "Please try again later and make sure your location is enabled", [{title: "Ok"}]);
     }
     };
-
-    getLocationHandler();
     
     const centerOnPosition = (lat, lon, zoom) => {
         mapRef.current.injectJavaScript(`
@@ -68,6 +66,15 @@ const mapRef = useRef(null);
           }).addTo(map);
         `)
     }
+
+    useEffect(() => {
+        getLocationHandler();
+    }, [])
+
+    useEffect(() => {
+        centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
+        setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
+    }, [ownLocation])
 
     return (
         <>
