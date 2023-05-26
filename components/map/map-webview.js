@@ -59,14 +59,15 @@ const mapRef = useRef(null);
     const addRoute = (startLat, startLon, endLat, endLon) => {
         mapRef.current.injectJavaScript(`
         if (routingControl != null) {
-            //map.removeControl(routingControl);
-            //routingControl = null;
+            map.removeControl(routingControl);
+            routingControl = null;
         }
         routingControl = L.Routing.control({
             waypoints: [
               L.latLng(${startLat}, ${startLon}),
               L.latLng(${endLat}, ${endLon})
-            ]
+            ],
+            createMarker: function() { return null; }
           }).addTo(map);
         `)
     }
