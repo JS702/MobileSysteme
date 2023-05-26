@@ -2,18 +2,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, StatusBar, Button } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location"
+import { Slider } from "@rneui/themed";
 import html_script from "./html_script";
 
 const OWN_MARKER = "ownMarker";
+const FRIEND_MARKER = "friendMarker";
 
 const MapWebview = () => {
 
-const mapRef = useRef(null);
+    const mapRef = useRef(null);
 
     const [ownLocation, setOwnLocation] = useState({
     lat: 37.78825,
     lng: -122.4324,
     });
+
+    const [friendLocation, setFriendLocation] = useState({
+    lat: 0,
+    lng: 0,
+    });
+
+    const [latSliderValue, setLatSliderValue] = useState(0);
+    const [lngSliderValue, setLngSliderValue] = useState(0);
     
     const verifyPermissions = async () => {
     const result = await Location.requestForegroundPermissionsAsync();
@@ -88,6 +98,35 @@ const mapRef = useRef(null);
         setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
     }, [ownLocation])
 
+    useEffect(() => {
+        setMarker(FRIEND_MARKER, friendLocation.lat, friendLocation.lng);
+        mapRef.current.injectJavaScript(`
+        routingControl.setWaypoints([
+            L.latLng(${ownLocation.lat}, ${ownLocation.lng}),
+            L.latLng(${friendLocation.lat}, ${friendLocation.lng})
+          ]);
+        `)
+    }, [friendLocation])
+
+
+    /** DEBUG FUNCTIONS */
+
+    const latSliderHandler = (value) => {
+        setLatSliderValue(value);
+        setFriendLocation({
+            lat: value,
+            lng: friendLocation.lng
+        });
+    }
+
+    const lngSliderHandler = (value) => {
+        setLngSliderValue(value);
+        setFriendLocation({
+            lat: friendLocation.lat,
+            lng: value
+        });
+    }
+
     return (
         <>
             <StatusBar barStyle="dark-content"/>
@@ -105,14 +144,28 @@ const mapRef = useRef(null);
                 setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
                 }}/>
              <Button title="Add" onPress={() => {
-                addMarker("Friend", ownLocation.lat + 0.001, ownLocation.lng);
+                addMarker(FRIEND_MARKER, friendLocation.lat, friendLocation.lng);
                 }}/>
             <Button title="Start routing" onPress={() => {
-                addRoute(ownLocation.lat, ownLocation.lng, ownLocation.lat + 0.001, ownLocation.lng);
+                addRoute(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng);
                 }}/>
             <Button title="Stop routing" onPress={() => {
                 removeRoute();
                 }}/>
+            <Slider
+                value={latSliderValue}
+                onValueChange={(value) => latSliderHandler(value)}
+                minimumValue={-90}
+                maximumValue={90}
+                step={1}
+              />
+            <Slider
+                value={lngSliderValue}
+                onValueChange={(value) => lngSliderHandler(value)}
+                minimumValue={-180}
+                maximumValue={180}
+                step={1}
+              />
         </>
     );
 }
