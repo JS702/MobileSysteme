@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, StatusBar, Button } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location"
-import { Slider } from "@rneui/themed";
+import { Slider, FAB, Icon } from "@rneui/themed";
+
 import html_script from "./html_script";
 
 const OWN_MARKER = "ownMarker";
@@ -24,6 +25,10 @@ const MapWebview = () => {
 
     const [latSliderValue, setLatSliderValue] = useState(0);
     const [lngSliderValue, setLngSliderValue] = useState(0);
+
+    const [isRouting, setIsRouting] = useState(false);
+    const [friendMarkerAdded, setFriendMarkerAdded] = useState(false);
+    const [buttonColor, setButtonColor] = useState("green");
     
     const verifyPermissions = async () => {
     const result = await Location.requestForegroundPermissionsAsync();
@@ -79,14 +84,16 @@ const MapWebview = () => {
             ],
             createMarker: function() { return null; }
           }).addTo(map);
-        `)
+        `);
+        setIsRouting(true);
     }
 
     const removeRoute = () => {
         mapRef.current.injectJavaScript(`
         map.removeControl(routingControl);
         routingControl = null;
-        `)
+        `);
+        setIsRouting(false);
     }
 
     useEffect(() => {
@@ -132,25 +139,43 @@ const MapWebview = () => {
             <StatusBar barStyle="dark-content"/>
             <SafeAreaView style={styles.Container}>
                 <WebView
-                ref={mapRef}
-                source={{ html: html_script }}
-                style={styles.Webview}
+                    ref={mapRef}
+                    source={{ html: html_script }}
+                    style={styles.Webview}
+                />
+                <FAB //Center Button
+                    style={styles.centerButton}
+                    icon={{ type:"ionicon", name: "locate", color: 'white' }}
+                    color="green"
+                    onPress={() => {
+                        centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
+                        setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
+                        }}
+                />
+                <FAB //Route Button
+                    style={styles.routeButton}
+                    
+                    icon={{
+                        ...isRouting ? { type:"ionicons", name: "close", color: 'white' } : { type:"feather", name: "corner-up-right", color: 'white' }
+                    }}
+                    color={buttonColor}
+                    disabled={!friendMarkerAdded}
+                    onPress={() => {
+                            if(!isRouting) {
+                                addRoute(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng);
+                                setButtonColor("red");
+                            } else {
+                                removeRoute();
+                                setButtonColor("green");
+                            }
+                        }}
                 />
             </SafeAreaView>
 
             {/* DEBUG BUTTONS*/}
-            <Button title="Center" onPress={() => {
-                centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
-                setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
-                }}/>
              <Button title="Add" onPress={() => {
                 addMarker(FRIEND_MARKER, friendLocation.lat, friendLocation.lng);
-                }}/>
-            <Button title="Start routing" onPress={() => {
-                addRoute(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng);
-                }}/>
-            <Button title="Stop routing" onPress={() => {
-                removeRoute();
+                setFriendMarkerAdded(true);
                 }}/>
             <Slider
                 value={latSliderValue}
@@ -173,12 +198,30 @@ const MapWebview = () => {
 const styles = StyleSheet.create({
     Container: {
         flex:1,
-        padding: 10,
+        padding: 0,
         backgroundColor: "grey"
     },
     Webview: {
         flex: 2
-    }
+    },
+    centerButton: {
+        position:'absolute',
+        right:0,
+        bottom: 0,
+        marginRight:10,
+        marginBottom:10,
+        height:50,
+        width:50
+    },
+    routeButton: {
+        position:'absolute',
+        right:0,
+        bottom: 60,
+        marginRight:10,
+        marginBottom:10,
+        height:50,
+        width:50,
+    },
 });
 
 export default MapWebview;
