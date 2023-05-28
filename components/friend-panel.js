@@ -1,18 +1,18 @@
-import {Button, FlatList, Pressable, View} from "react-native";
+import { Button, FlatList, Pressable, View, Text } from "react-native";
 import FriendItem from "./friend-item";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import * as Contacts from "expo-contacts";
-import {StyleSheet} from "react-native";
+import { StyleSheet } from "react-native";
 
 
-const FriendPanel = () => {
+const FriendPanel = ( { style } ) => {
 
-    const [sidePanelWidth, setSidePanelWidth] = useState("0%");
-    const [buttonDisplay, setButtonDisplay] = useState();
-    const [contacts, setContacts] = useState([]);
-    useEffect(() => {
-        (async () => {
-            const {status} = await Contacts.requestPermissionsAsync();
+    const [ showSidePanel, setShowSidePanel ] = useState( false );
+    const [ showButton, setShowButton ] = useState( true );
+    const [ contacts, setContacts ] = useState( [] );
+    useEffect( () => {
+        ( async () => {
+            const { status } = await Contacts.requestPermissionsAsync();
             if ( status === "granted" ) {
                 const { data } = await Contacts.getContactsAsync( {
                     fields: [ Contacts.PHONE_NUMBERS ]
@@ -25,41 +25,54 @@ const FriendPanel = () => {
         } )();
     }, [] );
 
-    const onButtonPress = () => {
-        setSidePanelWidth("50%");
-        setButtonDisplay("none");
+    const togglePanel = () => {
+        setShowSidePanel( !showSidePanel );
+        setShowButton( !showButton );
+    };
+
+    const onAddFriendsButtonPress = () => {
+        //TODO Liste an Leuten anzeigen
     };
 
 
     return (
-        <>
-            <Pressable style={{display: buttonDisplay}}>
-                <Button title={"FriendsButton"} onPress={onButtonPress}>Freunde</Button>
-            </Pressable>
-            <View>
-                <FlatList
-                    style={{...styles.sidebar, width: sidePanelWidth}}
-                    data={contacts}
-                    renderItem={({item}) => <FriendItem friendData={item}/>}
-                    keyExtractor={item => item?.id?.toString()}
-                />
-            </View>
+            <View style={ style }>
+                { showButton && <Button title={ "Freunde" } onPress={ togglePanel }></Button> }
+                {
+                        showSidePanel && <View style={ styles.sidebar }>
+                            <Pressable style={ styles.closeButton } onPress={ togglePanel }>
+                                <Text>x</Text>
+                            </Pressable>
+                            <FlatList
+                                    data={ contacts }
+                                    renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
+                                    keyExtractor={ item => item?.id?.toString() }
+                            />
+                            <View>
+                                <Button title={ "Freunde hinzufügen" } onPress={ onAddFriendsButtonPress }></Button>
+                            </View>
+                        </View>
+                }
 
-        </>
+            </View>
     );
 };
 
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
     baseLayout: {
         marginTop: "10%"
     },
     sidebar: {
         height: "100%",
-        marginRight: "auto",
         marginLeft: 0,
+        marginRight: "auto",
         backgroundColor: "#69b8f5"
+    },
+    closeButton: {
+        marginRight: 5,
+        marginLeft: "auto"
     }
-});
+} );
 
 export default FriendPanel;

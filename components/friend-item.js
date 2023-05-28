@@ -1,9 +1,11 @@
-import { StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 const FriendItem = ( { friendData } ) => {
 
     return (
-            <Text style={ styles.item }>{ friendData.name }</Text>
+            <Pressable>
+                <Text style={ styles.item }>{ friendData.name }</Text>
+            </Pressable>
     );
 };
 
