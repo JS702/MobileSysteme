@@ -72,8 +72,29 @@ const getUser = (req, res) => {
   res.json(req.user);
 };
 
+const getMyLocationById = asyncHandler(async (req, res) => {
+  const userJson = req.user;
+  const user = await User.findById(userJson._id);
+
+  if (!user) {
+    res.status(400);
+    throw new Error("No User");
+  }
+  res.status(201);
+  res.json({
+    latitude: user.location.latitude,
+    longitude: user.location.longitude,
+  });
+});
+
 const generateJWTToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRETKEY, { expiresIn: "60d" });
 };
 
-module.exports = { registerUser, loginUser, getUser, updateUserLocation };
+module.exports = {
+  registerUser,
+  loginUser,
+  getUser,
+  updateUserLocation,
+  getMyLocationById,
+};
