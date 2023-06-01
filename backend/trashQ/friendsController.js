@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const Friends = require("../models/friendsModel");
+const Friends = require("./friendsModel");
 const asyncHandler = require("express-async-handler");
 
 const friendRequest = asyncHandler(async (req, res) => {
