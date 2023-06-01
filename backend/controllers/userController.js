@@ -3,52 +3,36 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    res.status(400);
-    throw new Error("Please add all fields");
+const loginUser = asyncHandler(async (req, res) => {
+  let { telefon } = req.body;
+  if (telefon.startsWith("+")) {
+    telefon = "0" + telefon.substring(3);
   }
-  const userExist = await User.findOne({ username });
 
-  if (userExist) {
-    res.status(400);
-    throw new Error("User already exist");
-  }
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  const user = await User.create({
-    username,
-    password: hashedPassword,
-  });
+  const user = await User.findOne({ telefon });
 
   if (user) {
     res.status(201);
     res.json({
       _id: user.id,
-      username: user.username,
-      token: generateJWTToken(user.id),
-      user: user,
-    });
-  }
-});
-
-const loginUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    res.status(201);
-    res.json({
-      _id: user.id,
-      username: user.username,
+      telefon: user.telefon,
       token: generateJWTToken(user.id),
       user: user,
     });
   } else {
-    res.status(400);
-    throw new Error("Wrong Password or Email");
+    const createdUser = await User.create({
+      telefon,
+    });
+
+    if (createdUser) {
+      res.status(201);
+      res.json({
+        _id: createdUser.id,
+        username: createdUser.username,
+        token: generateJWTToken(createdUser.id),
+        user: createdUser,
+      });
+    }
   }
 });
 
@@ -72,6 +56,7 @@ const getUser = (req, res) => {
   res.json(req.user);
 };
 
+//deprecated
 const getMyLocationById = asyncHandler(async (req, res) => {
   const userJson = req.user;
   const user = await User.findById(userJson._id);
@@ -92,7 +77,6 @@ const generateJWTToken = (id) => {
 };
 
 module.exports = {
-  registerUser,
   loginUser,
   getUser,
   updateUserLocation,

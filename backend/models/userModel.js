@@ -2,14 +2,10 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
-    username: {
+    telefon: {
       type: String,
-      required: [true, "Please add a username"],
+      required: [true, "Please add a telefon"],
       unique: true,
-    },
-    password: {
-      type: String,
-      required: [true, "Please add a password"],
     },
     location: {
       latitude: {
