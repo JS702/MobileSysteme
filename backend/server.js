@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/users", require("./routes/userRoutes.js"));
+app.use("/api/permission", require("./routes/permissionRoute.js"));
 /* app.use("/api/friends", require("./trashQ/friendsRoutes.js")); */
 
 app.listen(port, () => {
