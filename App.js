@@ -4,9 +4,9 @@ import Compass from "./components/compass";
 
 export default function App() {
     return (
-            //<BaseLayout/>
+            <BaseLayout/>
             //<MapWebview/>
-            <Compass/>
+            //<Compass/>
     );
 }
 
