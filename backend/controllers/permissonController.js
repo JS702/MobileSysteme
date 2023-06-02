@@ -62,7 +62,7 @@ const askForPermission = asyncHandler(async (req, res) => {
 const getRequestFromFriend = asyncHandler(async (req, res) => {
   const userJson = req.user;
   const user = await User.findById(userJson._id);
-  console.log(user);
+
   if (!user) {
     res.status(400);
     throw new Error("No User");
@@ -106,7 +106,6 @@ const declineRequestFromFriend = asyncHandler(async (req, res) => {
   const id = req.body.id;
   const userJson = req.user;
   const user = await User.findById(userJson._id);
-  console.log(user);
 
   if (!user) {
     res.status(400);
@@ -116,9 +115,35 @@ const declineRequestFromFriend = asyncHandler(async (req, res) => {
   res.status(200).json(request);
 });
 
+const getLocationFromFriend = asyncHandler(async (req, res) => {
+  let friendsTelefon = unifyNumbers(req.body.friendsTelefon);
+  const userJson = req.user;
+
+  const permission = await Permission.findOne({
+    user: userJson.telefon,
+    friend: friendsTelefon,
+  });
+
+  if (!permission) {
+    res.status(400);
+    throw new Error("No request was found or declined");
+  }
+
+  if (permission.status === "pending") {
+    res.status(400);
+    throw new Error("pending request");
+  }
+
+  if (permission.status === "accepted") {
+    const friend = await User.findOne({ telefon: permission.friend });
+    res.status(200).json(friend);
+  }
+});
+
 module.exports = {
   askForPermission,
   getRequestFromFriend,
   acceptRequestFromFriend,
   declineRequestFromFriend,
+  getLocationFromFriend,
 };
