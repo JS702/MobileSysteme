@@ -1,10 +1,14 @@
 import { SafeAreaView, StyleSheet } from "react-native";
 import FriendPanel from "./friend-panel";
+import MapWebview from "./map/map-webview";
 
 const BaseLayout = () => {
     return (
             <SafeAreaView style={ styles.baseLayout }>
                 <FriendPanel style={ styles.panel }/>
+                
+                <MapWebview/>
+                
             </SafeAreaView>
     );
 };
@@ -12,10 +16,15 @@ const BaseLayout = () => {
 
 const styles = StyleSheet.create( {
     baseLayout: {
-        marginTop: "10%"
+        flex: 1,
+        zIndex: 0,
     },
     panel: {
-        marginTop: 10
+        position: "absolute",
+        zIndex: 1,
+        height: "100%",
+        //width: "100%",
+
     }
 } );
 
