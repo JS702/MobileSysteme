@@ -16,7 +16,7 @@ const BaseLayout = () => {
             <SafeAreaView style={ styles.baseLayout }>
                 <FAB //Friends Button
                     style={styles.friendsButton}
-                    icon={{ type:"fontisto", name: "persons", color: 'white' }}
+                    icon={{ type:"ionicons", name: "people", color: 'white' }}
                     color="green"
                     onPress={ togglePanel }
                 />

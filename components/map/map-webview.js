@@ -28,7 +28,10 @@ const MapWebview = () => {
 
     const [isRouting, setIsRouting] = useState(false);
     const [friendMarkerAdded, setFriendMarkerAdded] = useState(false);
-    const [buttonColor, setButtonColor] = useState("green");
+    const [routeButtonColor, setRouteButtonColor] = useState("green");
+
+    const [isShowingDirections, setIsShowingDirections] = useState(false);
+    const [directionsButtonColor, setDirectionsButtonColor] = useState("green");
     
     const verifyPermissions = async () => {
     const result = await Location.requestForegroundPermissionsAsync();
@@ -84,6 +87,7 @@ const MapWebview = () => {
             ],
             createMarker: function() { return null; }
           }).addTo(map);
+          routingControl.hide();
         `);
         setIsRouting(true);
     }
@@ -94,6 +98,18 @@ const MapWebview = () => {
         routingControl = null;
         `);
         setIsRouting(false);
+    }
+
+    const hideDirections = () => {
+        mapRef.current.injectJavaScript(`
+        routingControl.hide();
+        `);
+    }
+
+    const showDirections = () => {
+        mapRef.current.injectJavaScript(`
+        routingControl.show();
+        `);
     }
 
     useEffect(() => {
@@ -158,18 +174,36 @@ const MapWebview = () => {
                     icon={{
                         ...isRouting ? { type:"ionicons", name: "close", color: 'white' } : { type:"feather", name: "corner-up-right", color: 'white' }
                     }}
-                    color={buttonColor}
+                    color={routeButtonColor}
                     disabled={!friendMarkerAdded}
                     onPress={() => {
                             if(!isRouting) {
                                 addRoute(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng);
-                                setButtonColor("red");
+                                setRouteButtonColor("red");
                             } else {
                                 removeRoute();
-                                setButtonColor("green");
+                                setRouteButtonColor("green");
                             }
                         }}
                 />
+
+                { isRouting && <FAB //Directions Button
+                    style={styles.directionsButton}
+                    
+                    icon={{ type:"fontisto", name: "direction-sign", color: 'white' }}
+                    color={directionsButtonColor}
+                    disabled={!friendMarkerAdded}
+                    onPress={() => {
+                            setIsShowingDirections(!isShowingDirections);
+                            if (isShowingDirections) {
+                                hideDirections();
+                                setDirectionsButtonColor("green");
+                            } else {
+                                showDirections();
+                                setDirectionsButtonColor("red");
+                            }
+                        }}
+                />}
             </SafeAreaView>
 
             {/* DEBUG BUTTONS*/}
@@ -217,6 +251,15 @@ const styles = StyleSheet.create({
         position:'absolute',
         right:0,
         bottom: 60,
+        marginRight:10,
+        marginBottom:10,
+        height:50,
+        width:50,
+    },
+    directionsButton: {
+        position:'absolute',
+        right:0,
+        bottom: 120,
         marginRight:10,
         marginBottom:10,
         height:50,
