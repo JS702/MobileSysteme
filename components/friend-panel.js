@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native";
 
 const FriendPanel = ( { style } ) => {
 
-    const [ showSidePanel, setShowSidePanel ] = useState( false );
+    //const [ showSidePanel, setShowSidePanel ] = useState( false );
     const [ showButton, setShowButton ] = useState( true );
     const [ contacts, setContacts ] = useState( [] );
     useEffect( () => {
@@ -26,7 +26,7 @@ const FriendPanel = ( { style } ) => {
     }, [] );
 
     const togglePanel = () => {
-        setShowSidePanel( !showSidePanel );
+        //setShowSidePanel( !showSidePanel );
         setShowButton( !showButton );
     };
 
@@ -37,12 +37,12 @@ const FriendPanel = ( { style } ) => {
 
     return (
             <View style={ style }>
-                { showButton && <Button title={ "Freunde" } onPress={ togglePanel }></Button> }
+                { /*showButton && <Button title={ "Freunde" } onPress={ togglePanel }></Button>*/ }
                 {
-                        showSidePanel && <View style={ styles.sidebar }>
-                            <Pressable style={ styles.closeButton } onPress={ togglePanel }>
+                        /*showSidePanel &&*/ <View style={ styles.sidebar }>
+                            {/*<Pressable style={ styles.closeButton } onPress={ togglePanel }>
                                 <Text>x</Text>
-                            </Pressable>
+                            </Pressable>*/}
                             <FlatList
                                     data={ contacts }
                                     renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
