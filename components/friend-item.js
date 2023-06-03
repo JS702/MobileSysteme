@@ -1,11 +1,13 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
 const FriendItem = ( { friendData } ) => {
 
     return (
-            <Pressable>
+            <View>
                 <Text style={ styles.item }>{ friendData.name }</Text>
-            </Pressable>
+                <Button title={ "X" }/>
+            </View>
+
     );
 };
 
@@ -13,5 +15,6 @@ const styles = StyleSheet.create( {
     item: {
         marginLeft: 10
     }
+
 } );
 export default FriendItem;

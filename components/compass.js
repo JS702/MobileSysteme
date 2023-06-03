@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Image, View, Text, Dimensions, StyleSheet } from "react-native";
+import { Image } from "react-native";
 import { Grid, Col, Row } from "react-native-easy-grid";
 import { Magnetometer } from "expo-sensors";
 
-const { height, width } = Dimensions.get( "window" );
 
-const Compass = () => {
+const Compass = ( { style } ) => {
 
     const [ subscription, setSubscription ] = useState( null );
     const [ magnetometer, setMagnetometer ] = useState( 0 );
@@ -52,94 +51,35 @@ const Compass = () => {
         return Math.round( angle );
     };
 
-    const _direction = ( degree ) => {
-        if ( degree >= 22.5 && degree < 67.5 ) {
-            return "NE";
-        } else if ( degree >= 67.5 && degree < 112.5 ) {
-            return "E";
-        } else if ( degree >= 112.5 && degree < 157.5 ) {
-            return "SE";
-        } else if ( degree >= 157.5 && degree < 202.5 ) {
-            return "S";
-        } else if ( degree >= 202.5 && degree < 247.5 ) {
-            return "SW";
-        } else if ( degree >= 247.5 && degree < 292.5 ) {
-            return "W";
-        } else if ( degree >= 292.5 && degree < 337.5 ) {
-            return "NW";
-        } else {
-            return "N";
-        }
-    };
     // Match the device top with pointer 0° degree. (By default 0° starts from the right of the device.)
     const _degree = ( magnetometer ) => {
-        return magnetometer;//magnetometer - 90 >= 0 ? magnetometer - 90 : magnetometer + 271;
+        return magnetometer - 90 >= 0 ? magnetometer - 90 : magnetometer + 271;
     };
 
     return (
-            <Grid style={ { backgroundColor: "black" } }>
-                <Row style={ { alignItems: "center" } } size={ .9 }>
-                    <Col style={ { alignItems: "center" } }>
-                        <Text
-                                style={ {
-                                    color: "#fff",
-                                    fontSize: height / 26,
-                                    fontWeight: "bold"
-                                } }>
-                            { _direction( _degree( magnetometer ) ) }
-                        </Text>
+            <Grid style={ { backgroundColor: "black", ...style } }>
+                <Row style={ { alignItems: "flex-end" } } size={ 0.2 }>
+                    <Col style={ { width: style.width, alignItems: "center" } }>
+                        <Image source={ require( "../assets/compass_pointer.png" ) } style={ {
+                            height: style.height / 13, resizeMode: "contain", marginBottom: 0
+                        } }/>
                     </Col>
                 </Row>
 
-                <Row style={ { alignItems: "center" } } size={ .1 }>
+                <Row style={ { alignItems: "flex-start" } } size={ 2 }>
                     <Col style={ { alignItems: "center" } }>
-                        <View style={ { position: "absolute", width: width, alignItems: "center", top: 0 } }>
-                            <Image source={ require( "../assets/compass_pointer.png" ) } style={ {
-                                height: height / 26,
-                                resizeMode: "contain"
-                            } }/>
-                        </View>
-                    </Col>
-                </Row>
-
-                <Row style={ { alignItems: "center" } } size={ 2 }>
-                    <Text style={ {
-                        color: "#fff",
-                        fontSize: height / 27,
-                        width: width,
-                        position: "absolute",
-                        textAlign: "center"
-                    } }>
-                        { _degree( magnetometer ) }°
-                    </Text>
-
-                    <Col style={ { alignItems: "center" } }>
-
                         <Image source={ require( "../assets/compass_bg.png" ) } style={ {
-                            height: width - 80,
+                            height: style.width * 0.9,
                             justifyContent: "center",
                             alignItems: "center",
                             resizeMode: "contain",
                             transform: [ { rotate: 360 - magnetometer + "deg" } ]
                         } }/>
-
                     </Col>
                 </Row>
-
-                <Row style={ { alignItems: "center" } } size={ 1 }>
-                    <Col style={ { alignItems: "center" } }>
-                        <Text style={ { color: "#fff" } }>Copyright @RahulHaque</Text>
-                    </Col>
-                </Row>
-
             </Grid>
     );
 };
 
-const styles = StyleSheet.create( {
-    row: {
-        alignItems: "center"
-    }
-} );
 
 export default Compass;
