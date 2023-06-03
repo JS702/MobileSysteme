@@ -79,6 +79,20 @@ const getRequestFromFriend = asyncHandler(async (req, res) => {
   res.json(listOfRequest);
 });
 
+const deleteAllRequestsFromFriend = asyncHandler(async (req, res) => {
+  const userJson = req.user;
+  const user = await User.findById(userJson._id);
+
+  if (!user) {
+    res.status(400);
+    throw new Error("No User");
+  }
+
+  await Permission.deleteMany({ friend: user.telefon });
+
+  res.status(200).json({ message: "All requests deleted successfully" });
+});
+
 const acceptRequestFromFriend = asyncHandler(async (req, res) => {
   const id = req.body.id;
   const userJson = req.user;
@@ -146,4 +160,5 @@ module.exports = {
   acceptRequestFromFriend,
   declineRequestFromFriend,
   getLocationFromFriend,
+  deleteAllRequestsFromFriend,
 };
