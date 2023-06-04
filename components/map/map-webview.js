@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, StyleSheet, StatusBar, Button } from "react-native";
+import { SafeAreaView, StyleSheet, StatusBar, Button, Alert } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location"
 import { Slider, FAB, Icon } from "@rneui/themed";
 
 import html_script from "./html_script";
+import Compass from "../compass";
 
 const OWN_MARKER = "ownMarker";
 const FRIEND_MARKER = "friendMarker";
@@ -153,16 +154,17 @@ const MapWebview = () => {
     return (
         <>
             <StatusBar barStyle="dark-content"/>
-            <SafeAreaView style={styles.Container}>
+            <Compass style={ styles.compass }/>
+            <SafeAreaView style={ styles.Container }>
                 <WebView
-                    ref={mapRef}
-                    source={{ html: html_script }}
-                    style={styles.Webview}
+                        ref={ mapRef }
+                        source={ { html: html_script } }
+                        style={ styles.Webview }
                 />
                 <FAB //Center Button
-                    style={styles.centerButton}
-                    icon={{ type:"ionicon", name: "locate", color: 'white' }}
-                    color="green"
+                        style={ styles.centerButton }
+                        icon={ { type: "ionicon", name: "locate", color: "white" } }
+                        color="green"
                     onPress={() => {
                         centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
                         setMarker(OWN_MARKER, ownLocation.lat, ownLocation.lng);
@@ -257,14 +259,24 @@ const styles = StyleSheet.create({
         width:50,
     },
     directionsButton: {
-        position:'absolute',
-        right:0,
+        position: "absolute",
+        right: 0,
         bottom: 120,
-        marginRight:10,
-        marginBottom:10,
-        height:50,
-        width:50,
+        marginRight: 10,
+        marginBottom: 10,
+        height: 50,
+        width: 50
     },
+    compass: {
+        position: "absolute",
+        right: 0,
+        top: 0,
+        marginRight: 10,
+        marginTop: 10,
+        height: 100,
+        width: 100,
+        zIndex: 1
+    }
 });
 
 export default MapWebview;

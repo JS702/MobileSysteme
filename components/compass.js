@@ -69,7 +69,7 @@ const Compass = ( { style } ) => {
                 <Row style={ { alignItems: "flex-start" } } size={ 2 }>
                     <Col style={ { alignItems: "center" } }>
                         <Image source={ require( "../assets/compass_bg.png" ) } style={ {
-                            height: style.width * 0.9,
+                            height: style.width * 0.8,
                             justifyContent: "center",
                             alignItems: "center",
                             resizeMode: "contain",
