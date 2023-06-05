@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, StyleSheet, StatusBar, Button, Alert } from "react-native";
+import { SafeAreaView, StyleSheet, StatusBar, Button, Alert, View } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location"
 import { Slider, FAB, Icon } from "@rneui/themed";
@@ -154,7 +154,9 @@ const MapWebview = () => {
     return (
         <>
             <StatusBar barStyle="dark-content"/>
-            <Compass style={ styles.compass }/>
+            <View style={styles.compassWrapper} pointerEvents='box-none'>
+                <Compass style={ styles.compass }/>
+            </View>
             <SafeAreaView style={ styles.Container }>
                 <WebView
                         ref={ mapRef }
@@ -235,7 +237,8 @@ const styles = StyleSheet.create({
     Container: {
         flex:1,
         padding: 0,
-        backgroundColor: "grey"
+        backgroundColor: "grey",
+        textAlign: "center",
     },
     Webview: {
         flex: 2
@@ -268,14 +271,17 @@ const styles = StyleSheet.create({
         width: 50
     },
     compass: {
-        position: "absolute",
-        right: 0,
-        top: 0,
-        marginRight: 10,
-        marginTop: 10,
         height: 100,
-        width: 100,
-        zIndex: 1
+        width: 100
+    },
+    compassWrapper: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1,
     }
 });
 

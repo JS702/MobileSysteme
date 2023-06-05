@@ -43,7 +43,7 @@ const styles = StyleSheet.create( {
     },
     panel: {
         position: "absolute",
-        zIndex: 1,
+        zIndex: 2,
         height: "100%"
 
     },
