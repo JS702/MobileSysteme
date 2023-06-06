@@ -1,21 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Button } from "react-native";
 import FriendPanel from "./friend-panel";
 import MapWebview from "./map/map-webview";
 import { FAB } from "@rneui/themed";
-import Compass from "./compass";
 import RequestPopup from "./request-popup";
+import axiosInstance from "../axios-instance";
 
 const BaseLayout = () => {
 
     const [ showSidePanel, setShowSidePanel ] = useState( false );
 
-    const [ modalVisible, setModalVisible ] = useState( true );
+    const [ modalVisible, setModalVisible ] = useState( false );
 
+    const [ syncRequests, setSyncRequests ] = useState( [] );
+
+    const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
+    const poll = ( promiseFn, duration ) => promiseFn().then(
+            sleep( duration ).then( () => poll( promiseFn, duration ) ) );
+
+    poll( () => new Promise( () => axiosInstance.get( "/get-request-from-friend" ).then( ( response ) => {
+        setSyncRequests( response );
+    } ) ), 10000 );
 
     const togglePanel = () => {
         setShowSidePanel( !showSidePanel );
     };
+
+    const acceptRequest = ( accepted ) => {
+        if ( accepted ) {
+            //TODO mach iwas
+        }
+        syncRequests.shift();
+    };
+
+    useEffect( () => {
+        if ( syncRequests && syncRequests.length > 0 ) {
+            setModalVisible( true );
+        } else {
+            setModalVisible( false );
+        }
+    }, [ syncRequests ] );
 
     return (
             <SafeAreaView style={ styles.baseLayout }>
@@ -25,7 +49,8 @@ const BaseLayout = () => {
                         color="green"
                         onPress={ togglePanel }
                 />
-                <RequestPopup style={ styles.popup } modalVisible={ modalVisible } setModalVisible={ setModalVisible }/>
+                <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
+                              acceptRequest={ acceptRequest }/>
 
                 { showSidePanel && <FriendPanel style={ styles.panel }/> }
 

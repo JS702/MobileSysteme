@@ -2,18 +2,15 @@ import React from "react";
 import { StyleSheet, View, Modal, Text, Button } from "react-native";
 
 
-const RequestPopup = ( { style, modalVisible, setModalVisible } ) => {
+const RequestPopup = ( { style, modalVisible, acceptRequest } ) => {
 
     return (
-            <Modal style={ style } animationType={ "slide" } visible={ modalVisible } transparent={ true }
-                   onRequestClose={ () => {
-                       setModalVisible( false );
-                   } }>
+            <Modal style={ style } animationType={ "slide" } visible={ modalVisible } transparent={ true }>
                 <View style={ styles.container }>
                     <Text style={ styles.text }>Sync with Jon</Text>
                     <View style={ styles.container2 }>
-                        <Button title={ "Decline" } onPress={ () => setModalVisible( false ) }/>
-                        <Button title={ "Accept" } onPress={ () => setModalVisible( false ) }/>
+                        <Button title={ "Decline" } onPress={ () => acceptRequest( false ) }/>
+                        <Button title={ "Accept" } onPress={ () => acceptRequest( true ) }/>
                     </View>
                 </View>
 

@@ -3,6 +3,7 @@ import FriendItem from "./friend-item";
 import { useEffect, useState } from "react";
 import * as Contacts from "expo-contacts";
 import { StyleSheet } from "react-native";
+import axiosInstance from "../axios-instance";
 
 
 const FriendPanel = ( { style } ) => {
@@ -17,12 +18,21 @@ const FriendPanel = ( { style } ) => {
                     fields: [ Contacts.PHONE_NUMBERS ]
                 } );
                 if ( data.length > 0 ) {
-                    //TODO filter contacts by people who have our app -> number is in Database
-                    setContacts( data );
+                    axiosInstance.get( "/get-all-registered-friends", { params: { data: data } } ).then( ( response ) => {
+                        data.filter( contact => response.includes( transformNumber( contact.number ) ) );
+                        setContacts( response );
+                    } ).catch( ( err ) => console.log( err ) );
                 }
             }
         } )();
     }, [] );
+
+    const transformNumber = ( number ) => {
+        if ( !number.startsWith( "0" ) ) {
+            number.replace( "+49", "0" );
+        }
+        return number;
+    };
 
 
     return (
