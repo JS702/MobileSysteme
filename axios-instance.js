@@ -9,7 +9,7 @@ const headers = () => { // KP ob Stefan header benutzt
 };
 
 export default axios.create( {
-    //baseURL: "https://amaranth-monkey-tam.cyclic.app",
-    //baseURL: "https://localhost:5000"
+    //baseURL: "https://amaranth-monkey-tam.cyclic.app/api",
+    baseURL: "http://[HOSTNAME]:5000/api"
     //headers: headers()
 } );
