@@ -18,10 +18,13 @@ const FriendPanel = ( { style } ) => {
                     fields: [ Contacts.PHONE_NUMBERS ]
                 } );
                 if ( data.length > 0 ) {
+                    /*
                     axiosInstance.get( "/get-all-registered-friends", { params: { data: data } } ).then( ( response ) => {
                         data.filter( contact => response.includes( transformNumber( contact.number ) ) );
                         setContacts( response );
                     } ).catch( ( err ) => console.log( err ) );
+
+                     */
                 }
             }
         } )();

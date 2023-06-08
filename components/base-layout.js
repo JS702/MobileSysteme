@@ -5,6 +5,7 @@ import MapWebview from "./map/map-webview";
 import { FAB } from "@rneui/themed";
 import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
+import axios from "axios";
 
 const BaseLayout = () => {
 
@@ -14,15 +15,17 @@ const BaseLayout = () => {
 
     const [ syncRequests, setSyncRequests ] = useState( [] );
 
-    axiosInstance.post("/api/users/login", "+123456789").then(r => console.log(r)).catch((err) => console.log(err))
+    //axios.post( "https://amaranth-monkey-tam.cyclic.app/api/users/login", { telefon: "+123456789" } ).then( r  => console.log(r.data)).catch( ( err ) => console.log( err ) );
 
     const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
     const poll = ( promiseFn, duration ) => promiseFn().then(
             sleep( duration ).then( () => poll( promiseFn, duration ) ) );
-
+/*
     poll( () => new Promise( () => axiosInstance.get( "/get-request-from-friend" ).then( ( response ) => {
         setSyncRequests( response );
     } ) ), 10000 );
+
+ */
 
     const togglePanel = () => {
         setShowSidePanel( !showSidePanel );
