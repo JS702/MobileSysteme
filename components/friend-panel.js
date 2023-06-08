@@ -6,7 +6,7 @@ import { StyleSheet } from "react-native";
 import axiosInstance from "../axios-instance";
 
 
-const FriendPanel = ( { style } ) => {
+const FriendPanel = ( { style, token } ) => {
 
     const [ showButton, setShowButton ] = useState( true );
     const [ contacts, setContacts ] = useState( [] );
@@ -18,11 +18,13 @@ const FriendPanel = ( { style } ) => {
                     fields: [ Contacts.PHONE_NUMBERS ]
                 } );
                 if ( data.length > 0 ) {
+                    setContacts( data );
                     /*
-                    axiosInstance.get( "/get-all-registered-friends", { params: { data: data } } ).then( ( response ) => {
-                        data.filter( contact => response.includes( transformNumber( contact.number ) ) );
-                        setContacts( response );
-                    } ).catch( ( err ) => console.log( err ) );
+                     axiosInstance.get( "/users/get-all-registered-friends", { listOfFriends: data.map( contact => contact.number ) } )
+                     .then( ( response ) => {
+                     data.filter( contact => response.includes( transformNumber( contact.number ) ) );
+                     setContacts( response );
+                     } ).catch( ( err ) => console.log( err ) );
 
                      */
                 }

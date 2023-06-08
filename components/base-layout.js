@@ -5,6 +5,8 @@ import MapWebview from "./map/map-webview";
 import { FAB } from "@rneui/themed";
 import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const BaseLayout = () => {
 
@@ -14,24 +16,34 @@ const BaseLayout = () => {
 
     const [ syncRequests, setSyncRequests ] = useState( [] );
 
-    const [ isLoggedIn, setIsLoggedIn ] = useState( !!localStorage.getItem( "jwtToken" ) );
+    const [ token, setToken ] = useState( null );
 
     const [ phoneNumber, setPhoneNumber ] = useState( "" );
 
+    async function checkLoggedIn() {
+        const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
+        if ( token != null ) {
+            setToken( token );
+            const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
+            const poll = ( promiseFn, duration ) => promiseFn().then(
+                    sleep( duration ).then( () => poll( promiseFn, duration ) ) );
+            poll( () => new Promise(
+                    () => axiosInstance.get( "/permission/get-request-from-friend",
+                            { headers: { Authorization: "Bearer " + token } } )
+                            .then( ( response ) => {
+                                setSyncRequests( response );
+                            } ) ), 10000 );
+        }
+    }
+
+    checkLoggedIn();
+
     const login = () => {
         axiosInstance.post( "/users/login", { telefon: phoneNumber } ).then( r => {
-            localStorage.setItem( "jwtToken", r.data.token );
-            setIsLoggedIn( true );
-        } )
-                .catch( ( err ) => console.log( err ) );
+            AsyncStorage.setItem( "jwtToken", JSON.stringify( r.data.token ) );
+            setToken( JSON.stringify( r.data.token ) );
+        } ).catch( ( err ) => console.log( err ) );
     };
-
-    const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
-    const poll = ( promiseFn, duration ) => promiseFn().then(
-            sleep( duration ).then( () => poll( promiseFn, duration ) ) );
-    poll( () => new Promise( () => axiosInstance.get( "/permission/get-request-from-friend" ).then( ( response ) => {
-        setSyncRequests( response );
-    } ) ), 10000 );
 
 
     const togglePanel = () => {
@@ -53,9 +65,9 @@ const BaseLayout = () => {
         }
     }, [ syncRequests ] );
 
-    if ( !isLoggedIn ) {
+    if ( !token ) {
         return (
-                <View>
+                <View style={ { marginTop: "20%" } }>
                     <TextInput value={ phoneNumber } onChangeText={ setPhoneNumber }></TextInput>
                     <Button title={ "Abschicken" } onPress={ login }/>
                 </View> );
@@ -72,7 +84,7 @@ const BaseLayout = () => {
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
                               acceptRequest={ acceptRequest }/>
 
-                { showSidePanel && <FriendPanel style={ styles.panel }/> }
+                { showSidePanel && <FriendPanel style={ styles.panel } token={ token }/> }
 
                 <MapWebview/>
 
