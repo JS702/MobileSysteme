@@ -17,4 +17,10 @@ router.get("/get-location", auth, getMyLocationById);
 
 router.get("/get-friendslocation", getFriendsLocationById);
 router.get("/get-all-registered-friends", filterExistingNumbers);
+
+router.get("/hello", async (req, res) => {
+  res.status(201);
+  res.json("hello");
+});
+
 module.exports = router;
