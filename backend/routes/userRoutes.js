@@ -16,7 +16,7 @@ router.get("/get-user", auth, getUser);
 router.get("/get-location", auth, getMyLocationById);
 
 router.get("/get-friendslocation", getFriendsLocationById);
-router.get("/get-all-registered-friends", filterExistingNumbers);
+router.post("/get-all-registered-friends", filterExistingNumbers);
 
 router.get("/hello", async (req, res) => {
   res.status(201);
