@@ -6,6 +6,7 @@ import { FAB } from "@rneui/themed";
 import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 const BaseLayout = () => {
@@ -50,9 +51,11 @@ const BaseLayout = () => {
         setShowSidePanel( !showSidePanel );
     };
 
-    const acceptRequest = ( accepted ) => {
+    const acceptRequest = ( request, accepted ) => {
         if ( accepted ) {
-            //TODO mach iwas
+            axiosInstance.post( "permission/accept-request", { id: request.id, headers: token } );
+        } else {
+            axiosInstance.post( "permission/decline-request", { id: request.id, headers: token } );
         }
         syncRequests.shift();
     };
@@ -82,7 +85,7 @@ const BaseLayout = () => {
                         onPress={ togglePanel }
                 />
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
-                              acceptRequest={ acceptRequest }/>
+                              acceptRequest={ acceptRequest } request={ syncRequests[ 0 ] }/>
 
                 { showSidePanel && <FriendPanel style={ styles.panel } token={ token }/> }
 
