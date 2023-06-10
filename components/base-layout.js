@@ -6,7 +6,6 @@ import { FAB } from "@rneui/themed";
 import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 
 
 const BaseLayout = () => {
@@ -25,6 +24,7 @@ const BaseLayout = () => {
         const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
         if ( token != null ) {
             setToken( token );
+            /*
             const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
             const poll = ( promiseFn, duration ) => promiseFn().then(
                     sleep( duration ).then( () => poll( promiseFn, duration ) ) );
@@ -34,6 +34,8 @@ const BaseLayout = () => {
                             .then( ( response ) => {
                                 setSyncRequests( response );
                             } ) ), 10000 );
+
+             */
         }
     }
 
