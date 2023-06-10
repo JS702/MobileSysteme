@@ -6,7 +6,7 @@ import { FAB } from "@rneui/themed";
 import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useInterval } from "../common/useIntervall";
 
 const BaseLayout = () => {
 
@@ -22,32 +22,33 @@ const BaseLayout = () => {
 
     const [ trackedFriends, setTrackedFriends ] = useState( [] );
 
-    useEffect( () => {
-        if ( trackedFriends.length > 0 ) {
-            //TODO poll
-        }
-    }, [ trackedFriends ] );
-
     async function checkLoggedIn() {
         const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
         if ( token != null ) {
             setToken( token );
-            /*
-             const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
-             const poll = ( promiseFn, duration ) => promiseFn().then(
-             sleep( duration ).then( () => poll( promiseFn, duration ) ) );
-             poll( () => new Promise(
-             () => axiosInstance.get( "/permission/get-request-from-friend",
-             { headers: { Authorization: "Bearer " + token } } )
-             .then( ( response ) => {
-             setSyncRequests( response );
-             } ) ), 10000 );
-
-             */
         }
     }
 
     checkLoggedIn();
+
+    useInterval( async () => {
+        if ( token ) {
+            const response = await axiosInstance.get( "/permission/get-request-from-friend",
+                    { headers: { Authorization: "Bearer " + token } } );
+            if ( response && response.length > 0 ) {
+                setSyncRequests( response );
+            }
+        }
+    }, 10000 );
+
+    useInterval( async () => {
+        if ( trackedFriends.length > 0 ) {
+            await Promise.all( trackedFriends.map(
+                    friend => axiosInstance.post( "/permission/get-location-from-friend",
+                            { friendsTelefon: friend.phoneNumbers[ 0 ].number }, { headers: { Authorization: "Bearer " + token } } ) ) );
+        }
+    }, 5000 );
+
 
     const login = () => {
         axiosInstance.post( "/users/login", { telefon: phoneNumber } ).then( r => {

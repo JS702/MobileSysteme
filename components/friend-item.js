@@ -28,8 +28,7 @@ const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, token } ) 
             <View>
                 <Text style={ styles.item }>{ friendData.name }</Text>
                 <Button title={ "Find" } onPress={ locationRequest }/>
-                { isTracked && <Button title={ "Stop" } onPress={ stopTracking }/>
-                }
+                { isTracked && <Button title={ "Stop" } onPress={ stopTracking }/> }
             </View>
 
     );
