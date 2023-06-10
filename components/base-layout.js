@@ -20,20 +20,28 @@ const BaseLayout = () => {
 
     const [ phoneNumber, setPhoneNumber ] = useState( "" );
 
+    const [ trackedFriends, setTrackedFriends ] = useState( [] );
+
+    useEffect( () => {
+        if ( trackedFriends.length > 0 ) {
+            //TODO poll
+        }
+    }, [ trackedFriends ] );
+
     async function checkLoggedIn() {
         const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
         if ( token != null ) {
             setToken( token );
             /*
-            const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
-            const poll = ( promiseFn, duration ) => promiseFn().then(
-                    sleep( duration ).then( () => poll( promiseFn, duration ) ) );
-            poll( () => new Promise(
-                    () => axiosInstance.get( "/permission/get-request-from-friend",
-                            { headers: { Authorization: "Bearer " + token } } )
-                            .then( ( response ) => {
-                                setSyncRequests( response );
-                            } ) ), 10000 );
+             const sleep = duration => new Promise( resolve => setTimeout( resolve, duration ) );
+             const poll = ( promiseFn, duration ) => promiseFn().then(
+             sleep( duration ).then( () => poll( promiseFn, duration ) ) );
+             poll( () => new Promise(
+             () => axiosInstance.get( "/permission/get-request-from-friend",
+             { headers: { Authorization: "Bearer " + token } } )
+             .then( ( response ) => {
+             setSyncRequests( response );
+             } ) ), 10000 );
 
              */
         }
@@ -55,9 +63,9 @@ const BaseLayout = () => {
 
     const acceptRequest = ( request, accepted ) => {
         if ( accepted ) {
-            axiosInstance.post( "permission/accept-request", { id: request.id, headers: token } );
+            axiosInstance.post( "permission/accept-request", { id: request.id } );
         } else {
-            axiosInstance.post( "permission/decline-request", { id: request.id, headers: token } );
+            axiosInstance.post( "permission/decline-request", { id: request.id } );
         }
         syncRequests.shift();
     };
@@ -89,7 +97,8 @@ const BaseLayout = () => {
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
                               acceptRequest={ acceptRequest } request={ syncRequests[ 0 ] }/>
 
-                { showSidePanel && <FriendPanel style={ styles.panel } token={ token }/> }
+                { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriends={ trackedFriends }
+                                                setTrackedFriends={ setTrackedFriends }/> }
 
                 <MapWebview/>
 

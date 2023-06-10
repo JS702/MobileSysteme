@@ -7,7 +7,7 @@ import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-const FriendPanel = ( { style, token } ) => {
+const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends } ) => {
 
     const [ contacts, setContacts ] = useState( [] );
     const setCachedContacts = async () => {
@@ -23,8 +23,8 @@ const FriendPanel = ( { style, token } ) => {
         if ( !number ) {
             return;
         }
-        if ( !number.startsWith( "0" ) ) {
-            number.replace( "+49", "0" );
+        if ( number.startsWith( "+" ) ) {
+            number = "0" + number.substring( 3 );
         }
         return number.replaceAll( " ", "" );
     };
@@ -37,13 +37,13 @@ const FriendPanel = ( { style, token } ) => {
             } );
             if ( data.length > 0 ) {
                 axiosInstance.post( "/users/get-all-registered-friends", {
-                    listOfFriends: buildPayload( data ),
-                    headers: token
+                    listOfFriends: buildPayload( data )
                 } )
                         .then( ( response ) => {
-                            const filteredContacts = response.data ? data.filter(
-                                    contact => response?.data.includes( transformNumber( contact.number ) ) ) : [];
+                            const filteredContacts = data.filter(
+                                    contact => response.data.includes( transformNumber( contact.phoneNumbers[ 0 ].number ) ) );
                             setContacts( filteredContacts );
+
                             AsyncStorage.setItem( "contacts", JSON.stringify( filteredContacts ) );
                         } ).catch( ( err ) => console.log( err ) );
 
@@ -58,7 +58,8 @@ const FriendPanel = ( { style, token } ) => {
                 <View style={ styles.sidebar }>
                     <FlatList
                             data={ contacts }
-                            renderItem={ ( { item } ) => <FriendItem friendData={ item }/> }
+                            renderItem={ ( { item } ) => <FriendItem friendData={ item } trackedFriends={ trackedFriends }
+                                                                     setTrackedFriends={ setTrackedFriends } token={ token }/> }
                             keyExtractor={ item => item?.id?.toString() }
                     />
                 </View>
