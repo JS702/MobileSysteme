@@ -7,7 +7,7 @@ import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends } ) => {
+const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends, friendsTracking, setFriendsTracking } ) => {
 
     const [ contacts, setContacts ] = useState( [] );
     const setCachedContacts = async () => {
@@ -51,7 +51,6 @@ const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends } ) => {
         }
     };
 
-
     return (
             <View style={ style }>
                 <Button title={ "Refresh" } onPress={ refreshContacts }/>
@@ -59,7 +58,9 @@ const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends } ) => {
                     <FlatList
                             data={ contacts }
                             renderItem={ ( { item } ) => <FriendItem friendData={ item } trackedFriends={ trackedFriends }
-                                                                     setTrackedFriends={ setTrackedFriends } token={ token }/> }
+                                                                     setTrackedFriends={ setTrackedFriends } token={ token }
+                                                                     friendsTracking={ friendsTracking }
+                                                                     setFriendsTracking={ setFriendsTracking }/> }
                             keyExtractor={ item => item?.id?.toString() }
                     />
                 </View>

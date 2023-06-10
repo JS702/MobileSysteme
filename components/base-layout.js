@@ -10,17 +10,19 @@ import { useInterval } from "../common/useIntervall";
 
 const BaseLayout = () => {
 
+    const [ token, setToken ] = useState( null );
+
+    const [ phoneNumber, setPhoneNumber ] = useState( "" );
+
     const [ showSidePanel, setShowSidePanel ] = useState( false );
 
     const [ modalVisible, setModalVisible ] = useState( false );
 
     const [ syncRequests, setSyncRequests ] = useState( [] );
 
-    const [ token, setToken ] = useState( null );
-
-    const [ phoneNumber, setPhoneNumber ] = useState( "" );
-
     const [ trackedFriends, setTrackedFriends ] = useState( [] );
+
+    const [ friendsTracking, setFriendsTracking ] = useState( [] );
 
     async function checkLoggedIn() {
         const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
@@ -71,6 +73,12 @@ const BaseLayout = () => {
         syncRequests.shift();
     };
 
+    const stopGettingTracked = () => {
+        axiosInstance.delete( "delete-all-request", { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
+            setFriendsTracking( [] );
+        } );
+    };
+
     useEffect( () => {
         if ( syncRequests && syncRequests.length > 0 ) {
             setModalVisible( true );
@@ -99,9 +107,12 @@ const BaseLayout = () => {
                               acceptRequest={ acceptRequest } request={ syncRequests[ 0 ] }/>
 
                 { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriends={ trackedFriends }
-                                                setTrackedFriends={ setTrackedFriends }/> }
+                                                setTrackedFriends={ setTrackedFriends } friendsTracking={ friendsTracking }
+                                                setFriendsTracking={ setFriendsTracking }/> }
 
                 <MapWebview/>
+
+                { friendsTracking.length > 0 && <Button title={ "Stop getting Tracked" } onPress={ stopGettingTracked }/> }
 
             </SafeAreaView>
     );
