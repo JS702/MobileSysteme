@@ -32,16 +32,10 @@ const askForPermission = asyncHandler(async (req, res) => {
     throw new Error("No Friend with that name");
   }
 
-  const relationshipExist = await Permission.findOne()
-    .populate({
-      path: "user",
-      match: { telefon: user.telefon },
-    })
-    .populate({
-      path: "friend",
-      match: { telefon: friendsTelefon },
-    })
-    .exec();
+  const relationshipExist = await Permission.findOne({
+    user: user._id,
+    friend: friend._id,
+  });
 
   if (relationshipExist) {
     res.status(400);
