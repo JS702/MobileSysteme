@@ -7,7 +7,7 @@ const unifyNumbers = (tele) => {
   if (telefon.startsWith("+")) {
     telefon = "0" + telefon.substring(3);
   }
-  return telefon;
+  return telefon.split(" ").join("");
 };
 
 const askForPermission = asyncHandler(async (req, res) => {
