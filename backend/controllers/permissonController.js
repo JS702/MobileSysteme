@@ -7,7 +7,7 @@ const unifyNumbers = (tele) => {
   if (telefon.startsWith("+")) {
     telefon = "0" + telefon.substring(3);
   }
-  return telefon.replaceAll(" ", "");
+  return telefon.split(" ").join("");
 };
 
 const askForPermission = asyncHandler(async (req, res) => {
@@ -33,8 +33,8 @@ const askForPermission = asyncHandler(async (req, res) => {
   }
 
   const relationshipExist = await Permission.findOne({
-    user: user._id,
-    friend: friend._id,
+    user: user.telefon,
+    friend: friend.telefon,
   });
 
   if (relationshipExist) {
