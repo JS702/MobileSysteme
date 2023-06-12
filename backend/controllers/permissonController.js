@@ -62,7 +62,10 @@ const getRequestFromFriend = asyncHandler(async (req, res) => {
     throw new Error("No User");
   }
 
-  const listOfRequest = await Permission.find({ friend: user.telefon });
+  const listOfRequest = await Permission.find({
+    friend: user.telefon,
+    status: "pending",
+  });
 
   if (!listOfRequest) {
     res.status(400);
