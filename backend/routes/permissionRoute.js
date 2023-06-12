@@ -15,7 +15,7 @@ router.delete("/delete-all-request", auth, deleteAllRequestsFromFriend);
 
 router.get("/get-request-from-friend", auth, getRequestFromFriend);
 router.post("/accept-request", auth, acceptRequestFromFriend);
-router.delete("/decline-request", auth, declineRequestFromFriend);
+router.post("/decline-request", auth, declineRequestFromFriend);
 
 router.post("/get-location-from-friend", auth, getLocationFromFriend);
 

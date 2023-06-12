@@ -1,6 +1,7 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import axiosInstance from "../axios-instance";
 import { useEffect, useState } from "react";
+import { transformNumber } from "../common/transformNumber";
 
 const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, friendsTracking, setFriendsTracking, token } ) => {
 
@@ -9,13 +10,16 @@ const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, friendsTra
     const [ isTracking, setIsTracking ] = useState( false );
 
     useEffect( () => {
-        if ( trackedFriends.length > 0 && trackedFriends.includes( friendData ) ) {
+    }, [ isTracking, isTracked ] );
+
+    useEffect( () => {
+        if ( trackedFriends.length > 0 && trackedFriends.includes( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) ) {
             setIsTracked( true );
         }
     }, [ trackedFriends ] );
 
     useEffect( () => {
-        if ( friendsTracking.length > 0 && friendsTracking.includes( friendData ) ) {
+        if ( friendsTracking.length > 0 && friendsTracking.includes( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) ) {
             setIsTracking( true );
         }
     }, [ friendsTracking ] );
@@ -23,18 +27,18 @@ const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, friendsTra
     const locationRequest = () => {
         axiosInstance.post( "/permission/permission-request", { friendsTelefon: friendData.phoneNumbers[ 0 ].number },
                 { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
-            setTrackedFriends( [ ...trackedFriends, friendData ] );
+            setTrackedFriends( [ ...trackedFriends, transformNumber( friendData.phoneNumbers[ 0 ].number ) ] );
         } );
     };
 
     const stopTracking = () => {
-        setTrackedFriends( trackedFriends.filter( friend => friend !== friendData ) );
+        setTrackedFriends( trackedFriends.filter( friend => friend !== transformNumber( friendData.phoneNumbers[ 0 ].number ) ) );
         setIsTracked( false );
     };
 
 
     const stopGettingTracked = () => {
-        setFriendsTracking( friendsTracking.filter( friend => friend !== friendData ) );
+        setFriendsTracking( friendsTracking.filter( friend => friend !== transformNumber( friendData.phoneNumbers[ 0 ].number ) ) );
         setIsTracking( false );
     };
 

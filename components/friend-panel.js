@@ -1,10 +1,11 @@
 import { Button, FlatList, View } from "react-native";
 import FriendItem from "./friend-item";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Contacts from "expo-contacts";
 import { StyleSheet } from "react-native";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { transformNumber } from "../common/transformNumber";
 
 
 const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends, friendsTracking, setFriendsTracking } ) => {
@@ -18,15 +19,6 @@ const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends, friends
 
     const buildPayload = ( data ) => {
         return data.map( contact => contact.phoneNumbers[ 0 ].number.replaceAll( " ", "" ) );
-    };
-    const transformNumber = ( number ) => {
-        if ( !number ) {
-            return;
-        }
-        if ( number.startsWith( "+" ) ) {
-            number = "0" + number.substring( 3 );
-        }
-        return number.replaceAll( " ", "" );
     };
 
     const refreshContacts = async () => {

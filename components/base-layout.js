@@ -37,8 +37,8 @@ const BaseLayout = () => {
         if ( token ) {
             const response = await axiosInstance.get( "/permission/get-request-from-friend",
                     { headers: { Authorization: "Bearer " + token } } );
-            if ( response && response.length > 0 ) {
-                setSyncRequests( response );
+            if ( response.data && response.data.length > 0 ) {
+                setSyncRequests( response.data );
             }
         }
     }, 10000 );
@@ -65,16 +65,19 @@ const BaseLayout = () => {
     };
 
     const acceptRequest = ( request, accepted ) => {
+        setSyncRequests( syncRequests.slice( 1 ) );
         if ( accepted ) {
-            axiosInstance.post( "permission/accept-request", { id: request.id } );
+            axiosInstance.post( "/permission/accept-request", { id: request._id }, { headers: { Authorization: "Bearer " + token } } )
+                    .then( r => {
+                        setFriendsTracking( [ ...friendsTracking, r.data.user ] );
+                    } );
         } else {
-            axiosInstance.post( "permission/decline-request", { id: request.id } );
+            axiosInstance.post( "/permission/decline-request", { id: request._id }, { headers: { Authorization: "Bearer " + token } } );
         }
-        syncRequests.shift();
     };
 
     const stopGettingTracked = () => {
-        axiosInstance.delete( "delete-all-request", { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
+        axiosInstance.delete( "/delete-all-request", { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
             setFriendsTracking( [] );
         } );
     };

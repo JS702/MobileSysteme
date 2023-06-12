@@ -9,8 +9,8 @@ const RequestPopup = ( { style, modalVisible, acceptRequest, request } ) => {
                 <View style={ styles.container }>
                     <Text style={ styles.text }>Sync with { request?.friend }</Text>
                     <View style={ styles.container2 }>
-                        <Button title={ "Decline" } onPress={ () => acceptRequest( false, request ) }/>
-                        <Button title={ "Accept" } onPress={ () => acceptRequest( true, request ) }/>
+                        <Button title={ "Decline" } onPress={ () => acceptRequest( request, false ) }/>
+                        <Button title={ "Accept" } onPress={ () => acceptRequest( request, true ) }/>
                     </View>
                 </View>
 
