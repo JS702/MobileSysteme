@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Image } from "react-native";
+import { Image, View } from "react-native";
 import { Grid, Col, Row } from "react-native-easy-grid";
 import { Magnetometer } from "expo-sensors";
+import { Icon } from "@rneui/themed";
 
 
 const Compass = ( { style } ) => {
@@ -57,6 +58,15 @@ const Compass = ( { style } ) => {
     };
 
     return (
+        <View style={ { backgroundColor:  "#00000088",
+                        borderRadius: 90,
+                        marginTop: 8,
+                        width: 60,
+                        height: 60,
+                        justifyContent: "center",
+                        alignItems: "center"
+                    } }>
+        {/*
             <Grid style={ { backgroundColor: "black", ...style } }>
                 <Row style={ { alignItems: "flex-end" } } size={ 0.2 }>
                     <Col style={ { width: style.width, alignItems: "center" } }>
@@ -78,6 +88,19 @@ const Compass = ( { style } ) => {
                     </Col>
                 </Row>
             </Grid>
+                    */}
+
+            <Icon
+                type="entypo"
+                name="direction"
+                color="white"
+                size={30}
+                style={ {
+                    resizeMode: "contain",
+                    transform: "".concat("rotate(", 45 - 360 - magnetometer, "deg)"),
+                } }   
+            />
+        </View>
     );
 };
 
