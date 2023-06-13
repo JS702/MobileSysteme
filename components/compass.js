@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Image, View } from "react-native";
-import { Grid, Col, Row } from "react-native-easy-grid";
+import { View } from "react-native";
 import { Magnetometer } from "expo-sensors";
 import { Icon } from "@rneui/themed";
 
 
-const Compass = ( { style } ) => {
+const Compass = ( { angle, ownLocation, friendLocation } ) => {
 
     const [ subscription, setSubscription ] = useState( null );
     const [ magnetometer, setMagnetometer ] = useState( 0 );
@@ -17,6 +16,20 @@ const Compass = ( { style } ) => {
             _unsubscribe();
         };
     }, [] );
+
+    const caculauteDir = () => {
+        const vector = [ friendLocation.lng - ownLocation.lng, friendLocation.lat - ownLocation.lat ];
+        const theta = angle * 180 / Math.PI;
+
+        const cs = Math.cos( theta );
+        const sn = Math.sin( theta );
+
+        const x = ( ownLocation.lat + 1 ) * cs - ownLocation.lng * sn;
+        const y = ( ownLocation.lat + 1 ) * sn + ownLocation.lng * cs;
+
+        const otherVector = [ x, y ];
+        return Math.atan2(  vector[ 0 ] - otherVector[ 0 ], vector[ 1 ] - otherVector[ 1 ] ) * 180 / Math.PI;
+    };
 
     const _toggle = () => {
         if ( subscription ) {
@@ -52,10 +65,6 @@ const Compass = ( { style } ) => {
         return Math.round( angle );
     };
 
-    // Match the device top with pointer 0° degree. (By default 0° starts from the right of the device.)
-    const _degree = ( magnetometer ) => {
-        return magnetometer - 90 >= 0 ? magnetometer - 90 : magnetometer + 271;
-    };
 
     return (
         <View style={ { backgroundColor:  "#00000088",
@@ -66,29 +75,6 @@ const Compass = ( { style } ) => {
                         justifyContent: "center",
                         alignItems: "center"
                     } }>
-        {/*
-            <Grid style={ { backgroundColor: "black", ...style } }>
-                <Row style={ { alignItems: "flex-end" } } size={ 0.2 }>
-                    <Col style={ { width: style.width, alignItems: "center" } }>
-                        <Image source={ require( "../assets/compass_pointer.png" ) } style={ {
-                            height: style.height / 13, resizeMode: "contain", marginBottom: 0
-                        } }/>
-                    </Col>
-                </Row>
-
-                <Row style={ { alignItems: "flex-start" } } size={ 2 }>
-                    <Col style={ { alignItems: "center" } }>
-                        <Image source={ require( "../assets/compass_bg.png" ) } style={ {
-                            height: style.width * 0.8,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            resizeMode: "contain",
-                            transform: [ { rotate: 360 - magnetometer + "deg" } ]
-                        } }/>
-                    </Col>
-                </Row>
-            </Grid>
-                    */}
 
             <Icon
                 type="entypo"
@@ -97,7 +83,7 @@ const Compass = ( { style } ) => {
                 size={30}
                 style={ {
                     resizeMode: "contain",
-                    transform: "".concat("rotate(", 45 - 360 - magnetometer, "deg)"),
+                    transform: "".concat( "rotate(", 45 - 360 - magnetometer + caculauteDir(), "deg)" )
                 } }   
             />
         </View>
