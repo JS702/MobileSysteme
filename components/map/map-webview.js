@@ -3,14 +3,15 @@ import { SafeAreaView, StyleSheet, StatusBar, Button, Alert, View } from "react-
 import WebView from "react-native-webview";
 import * as Location from "expo-location";
 import { Slider, FAB, Icon } from "@rneui/themed";
-
+import { useInterval } from "../../common/useIntervall";
+import axiosInstance from "../../axios-instance";
 import html_script from "./html_script";
 import Compass from "../compass";
 
 const OWN_MARKER = "ownMarker";
 const FRIEND_MARKER = "friendMarker";
 
-const MapWebview = () => {
+const MapWebview = ( trackedFriends, token ) => {
 
     const mapRef = useRef( null );
 
@@ -132,6 +133,20 @@ const MapWebview = () => {
           ]);
         ` );
     }, [ friendLocation ] );
+
+    useInterval( async () => {
+        if ( trackedFriends.length > 0 ) {
+            console.log("Getting friend location...");
+            const friends = await Promise.all( trackedFriends.map(
+                    friend => axiosInstance.post( "/permission/get-location-from-friend",
+                            { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
+            //erstmal immer nur den ersten Freund tracken
+            if (friends[0].hasOwnProperty("location")) {
+                setFriendLocation({lat: friends[0].location.latitude, lng: friends[0].location.longitude});
+            }
+            console.log("Got friend location");
+        }
+    }, 10000 );
 
 
     /** DEBUG FUNCTIONS */

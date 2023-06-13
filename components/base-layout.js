@@ -113,7 +113,7 @@ const BaseLayout = () => {
                                                 setTrackedFriends={ setTrackedFriends } friendsTracking={ friendsTracking }
                                                 setFriendsTracking={ setFriendsTracking }/> }
 
-                <MapWebview/>
+                <MapWebview trackedFriends={ trackedFriends } token={ token }/>
 
                 { friendsTracking.length > 0 && <Button title={ "Stop getting Tracked" } onPress={ stopGettingTracked }/> }
 
