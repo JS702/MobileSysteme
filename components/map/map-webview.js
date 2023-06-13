@@ -125,6 +125,10 @@ const MapWebview = ( trackedFriends, token ) => {
     }, [ ownLocation ] );
 
     useEffect( () => {
+        if (!friendMarkerAdded) {
+            addMarker(FRIEND_MARKER, friendLocation.lat, friendLocation.lng);
+            setFriendMarkerAdded(true);
+        }
         setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
         mapRef.current.injectJavaScript( `
         routingControl.setWaypoints([
