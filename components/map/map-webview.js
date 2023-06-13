@@ -73,8 +73,15 @@ const MapWebview = ( { trackedFriends, token } ) => {
 
     const addMarker = ( name, lat, lon ) => {
         mapRef.current.injectJavaScript( `
-            const ${ name } = L.marker([${ lat }, ${ lon }]).addTo(map);
+            var ${ name } = L.marker([${ lat }, ${ lon }]).addTo(map);
         ` );
+    };
+
+    const removeMarker = ( name ) => {
+        mapRef.current.injectJavaScript( `
+            ${ name }.remove();
+        ` );
+        setFriendMarkerAdded( false );
     };
 
     const addRoute = ( startLat, startLon, endLat, endLon ) => {
@@ -125,10 +132,6 @@ const MapWebview = ( { trackedFriends, token } ) => {
     }, [ ownLocation ] );
 
     useEffect( () => {
-        if ( !friendMarkerAdded ) {
-            addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
-            setFriendMarkerAdded( true );
-        }
         setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
         mapRef.current.injectJavaScript( `
         routingControl.setWaypoints([
@@ -147,6 +150,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
             //erstmal immer nur den ersten Freund tracken
             if ( friends[ 0 ].hasOwnProperty( "location" ) ) {
                 setFriendLocation( { lat: friends[ 0 ].location.latitude, lng: friends[ 0 ].location.longitude } );
+                addMarker(FRIEND_MARKER, friends[ 0 ].location.latitude, friends[ 0 ].location.longitude);
             }
             console.log( "Got friend location" );
         }
@@ -190,6 +194,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
                             onPress={ () => {
                                 centerOnPosition( ownLocation.lat, ownLocation.lng, 16 );
                                 setMarker( OWN_MARKER, ownLocation.lat, ownLocation.lng );
+                                removeMarker( FRIEND_MARKER );
                             } }
                     />
                     <FAB //Route Button
@@ -236,8 +241,16 @@ const MapWebview = ( { trackedFriends, token } ) => {
 
                 {/* DEBUG BUTTONS*/ }
                 <Button title="Add" onPress={ () => {
-                    addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
-                    setFriendMarkerAdded( true );
+                    if (!friendMarkerAdded) {
+                        addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
+                        setFriendMarkerAdded( true );
+                    }
+                } }/>
+                <Button title="Remove" onPress={ () => {
+                    if (friendMarkerAdded) {
+                        removeMarker( FRIEND_MARKER );
+                        setFriendMarkerAdded( false );
+                    }
                 } }/>
                 <Slider
                         value={ latSliderValue }
