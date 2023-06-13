@@ -11,19 +11,19 @@ import Compass from "../compass";
 const OWN_MARKER = "ownMarker";
 const FRIEND_MARKER = "friendMarker";
 
-const MapWebview = ( trackedFriends, token ) => {
+const MapWebview = ( { trackedFriends, token } ) => {
 
     const mapRef = useRef( null );
 
-    const [ownLocation, setOwnLocation] = useState({
-    lat: 37.78825,
-    lng: -122.4324,
-    });
+    const [ ownLocation, setOwnLocation ] = useState( {
+        lat: 37.78825,
+        lng: -122.4324
+    } );
 
-    const [friendLocation, setFriendLocation] = useState({
-    lat: 0,
-    lng: 0,
-    });
+    const [ friendLocation, setFriendLocation ] = useState( {
+        lat: 0,
+        lng: 0
+    } );
 
     const [ latSliderValue, setLatSliderValue ] = useState( 0 );
     const [ lngSliderValue, setLngSliderValue ] = useState( 0 );
@@ -125,9 +125,9 @@ const MapWebview = ( trackedFriends, token ) => {
     }, [ ownLocation ] );
 
     useEffect( () => {
-        if (!friendMarkerAdded) {
-            addMarker(FRIEND_MARKER, friendLocation.lat, friendLocation.lng);
-            setFriendMarkerAdded(true);
+        if ( !friendMarkerAdded ) {
+            addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
+            setFriendMarkerAdded( true );
         }
         setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
         mapRef.current.injectJavaScript( `
@@ -140,15 +140,15 @@ const MapWebview = ( trackedFriends, token ) => {
 
     useInterval( async () => {
         if ( trackedFriends.length > 0 ) {
-            console.log("Getting friend location...");
+            console.log( "Getting friend location..." );
             const friends = await Promise.all( trackedFriends.map(
                     friend => axiosInstance.post( "/permission/get-location-from-friend",
                             { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
             //erstmal immer nur den ersten Freund tracken
-            if (friends[0].hasOwnProperty("location")) {
-                setFriendLocation({lat: friends[0].location.latitude, lng: friends[0].location.longitude});
+            if ( friends[ 0 ].hasOwnProperty( "location" ) ) {
+                setFriendLocation( { lat: friends[ 0 ].location.latitude, lng: friends[ 0 ].location.longitude } );
             }
-            console.log("Got friend location");
+            console.log( "Got friend location" );
         }
     }, 10000 );
 

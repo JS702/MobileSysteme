@@ -9,8 +9,6 @@ const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, friendsTra
 
     const [ isTracking, setIsTracking ] = useState( false );
 
-    useEffect( () => {
-    }, [ isTracking, isTracked ] );
 
     useEffect( () => {
         if ( trackedFriends.length > 0 && trackedFriends.includes( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) ) {
@@ -45,7 +43,7 @@ const FriendItem = ( { friendData, trackedFriends, setTrackedFriends, friendsTra
     return (
             <View>
                 <Text style={ styles.item }>{ friendData.name }</Text>
-                <Button title={ "Find" } onPress={ locationRequest }/>
+                { !isTracked && <Button title={ "Find" } onPress={ locationRequest }/> }
                 { isTracked && <Button title={ "Stop" } onPress={ stopTracking }/> }
                 { isTracking && <Button title={ "Disconnect" } onPress={ stopGettingTracked }/> }
             </View>

@@ -43,14 +43,6 @@ const BaseLayout = () => {
         }
     }, 10000 );
 
-    useInterval( async () => {
-        if ( trackedFriends.length > 0 ) {
-            await Promise.all( trackedFriends.map(
-                    friend => axiosInstance.post( "/permission/get-location-from-friend",
-                            { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
-        }
-    }, 5000 );
-
 
     const login = () => {
         axiosInstance.post( "/users/login", { telefon: phoneNumber } ).then( r => {
