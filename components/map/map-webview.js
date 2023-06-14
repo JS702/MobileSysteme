@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, StyleSheet, StatusBar, Button, Alert, View } from "react-native";
+import { SafeAreaView, StyleSheet, StatusBar, Button, Alert, View, Linking } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location";
 import { Slider, FAB } from "@rneui/themed";
@@ -210,6 +210,13 @@ const MapWebview = ( { trackedFriends, token } ) => {
                             ref={ mapRef }
                             source={ { html: html_script } }
                             style={ styles.Webview }
+                            onShouldStartLoadWithRequest={(request) => {
+                                if(request.url !== "about:blank") {
+                                    Linking.openURL(request.url)
+                                    return false
+                                } else return true
+                            }}
+                              
                     />
                     <FAB //Center Button
                             style={ styles.centerButton }
