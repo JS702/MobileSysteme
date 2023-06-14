@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, StatusBar, Button, Alert, View } from "react-native";
 import WebView from "react-native-webview";
 import * as Location from "expo-location";
-import { Slider, FAB, Icon } from "@rneui/themed";
+import { Slider, FAB } from "@rneui/themed";
 import { useInterval } from "../../common/useIntervall";
 import axiosInstance from "../../axios-instance";
 import html_script from "./html_script";
@@ -34,6 +34,8 @@ const MapWebview = ( { trackedFriends, token } ) => {
 
     const [ isShowingDirections, setIsShowingDirections ] = useState( false );
     const [ directionsButtonColor, setDirectionsButtonColor ] = useState( "green" );
+
+    const [ firstRender, setFirstRender ] = useState( true );
 
 
     const verifyPermissions = async () => {
@@ -124,6 +126,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
 
     useEffect( () => {
         getLocationHandler();
+        setFirstRender(false);
     }, [] );
 
     useEffect( () => {
@@ -132,13 +135,21 @@ const MapWebview = ( { trackedFriends, token } ) => {
     }, [ ownLocation ] );
 
     useEffect( () => {
-        setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
-        mapRef.current.injectJavaScript( `
-        routingControl.setWaypoints([
-            L.latLng(${ ownLocation.lat }, ${ ownLocation.lng }),
-            L.latLng(${ friendLocation.lat }, ${ friendLocation.lng })
-          ]);
-        ` );
+        if (!firstRender) {
+            if (!friendMarkerAdded) {
+                addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
+                setFriendMarkerAdded( true );
+            } else {
+                setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
+                mapRef.current.injectJavaScript( `
+                routingControl.setWaypoints([
+                    L.latLng(${ ownLocation.lat }, ${ ownLocation.lng }),
+                    L.latLng(${ friendLocation.lat }, ${ friendLocation.lng })
+                ]);
+                ` );
+            }
+        }
+        
     }, [ friendLocation ] );
 
     useInterval( async () => {
@@ -150,7 +161,6 @@ const MapWebview = ( { trackedFriends, token } ) => {
             //erstmal immer nur den ersten Freund tracken
             if ( friends[ 0 ].hasOwnProperty( "location" ) ) {
                 setFriendLocation( { lat: friends[ 0 ].location.latitude, lng: friends[ 0 ].location.longitude } );
-                addMarker(FRIEND_MARKER, friends[ 0 ].location.latitude, friends[ 0 ].location.longitude);
             }
             console.log( "Got friend location" );
         }
@@ -179,7 +189,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
             <>
                 <StatusBar barStyle="dark-content"/>
                 <View style={ styles.compassWrapper } pointerEvents="box-none">
-                    <Compass style={ styles.compass } angle={ 90 } ownLocation={ ownLocation } friendLocation={ friendLocation }/>
+                    { friendMarkerAdded && <Compass style={ styles.compass } angle={ 90 } ownLocation={ ownLocation } friendLocation={ friendLocation }/> }
                 </View>
                 <SafeAreaView style={ styles.Container }>
                     <WebView
@@ -194,7 +204,6 @@ const MapWebview = ( { trackedFriends, token } ) => {
                             onPress={ () => {
                                 centerOnPosition( ownLocation.lat, ownLocation.lng, 16 );
                                 setMarker( OWN_MARKER, ownLocation.lat, ownLocation.lng );
-                                removeMarker( FRIEND_MARKER );
                             } }
                     />
                     <FAB //Route Button
@@ -240,12 +249,6 @@ const MapWebview = ( { trackedFriends, token } ) => {
                 </SafeAreaView>
 
                 {/* DEBUG BUTTONS*/ }
-                <Button title="Add" onPress={ () => {
-                    if (!friendMarkerAdded) {
-                        addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
-                        setFriendMarkerAdded( true );
-                    }
-                } }/>
                 <Button title="Remove" onPress={ () => {
                     if (friendMarkerAdded) {
                         removeMarker( FRIEND_MARKER );
