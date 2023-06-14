@@ -73,9 +73,22 @@ const MapWebview = ( { trackedFriends, token } ) => {
         ` );
     };
 
-    const addMarker = ( name, lat, lon ) => {
+    const addMarker = ( name, lat, lon, popupText ) => {
+        if (popupText == undefined) {
+            mapRef.current.injectJavaScript( `
+                var ${ name } = L.marker([${ lat }, ${ lon }]).addTo(map);
+            ` );
+        } else {
+            mapRef.current.injectJavaScript( `
+                var ${ name } = L.marker([${ lat }, ${ lon }]).addTo(map).bindPopup('<p align="center"> ${ popupText } </p>');
+            ` );
+        }
+    };
+
+    const changeMarkerColor = ( name, color ) => {
+        //Color = Red / Green / Blue / Purple / Yellow
         mapRef.current.injectJavaScript( `
-            var ${ name } = L.marker([${ lat }, ${ lon }]).addTo(map);
+            ${ name }._icon.classList.add("hueChange${ color }");
         ` );
     };
 
@@ -137,7 +150,8 @@ const MapWebview = ( { trackedFriends, token } ) => {
     useEffect( () => {
         if (!firstRender) {
             if (!friendMarkerAdded) {
-                addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
+                addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng, "Hallo" );
+                changeMarkerColor( FRIEND_MARKER, "Red");
                 setFriendMarkerAdded( true );
             } else {
                 setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );

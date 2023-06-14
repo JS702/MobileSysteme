@@ -28,6 +28,11 @@ const html_script = `
 			max-width: 100%;
 			max-height: 100%;
 		}
+		img.hueChangeRed { filter: hue-rotate(140deg); }
+		img.hueChangeGreen { filter: hue-rotate(260deg); }
+		img.hueChangeBlue { filter: hue-rotate(0deg); }
+		img.hueChangePurple { filter: hue-rotate(80deg); }
+		img.hueChangeYellow { filter: hue-rotate(210deg); }
 	</style>
 
 	
