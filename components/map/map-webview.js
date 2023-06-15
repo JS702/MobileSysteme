@@ -172,11 +172,22 @@ const MapWebview = ( { trackedFriends, token } ) => {
             const friends = await Promise.all( trackedFriends.map(
                     friend => axiosInstance.post( "/permission/get-location-from-friend",
                             { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
+            console.log(friends[0]);
             //erstmal immer nur den ersten Freund tracken
             if ( friends[ 0 ].hasOwnProperty( "location" ) ) {
                 setFriendLocation( { lat: friends[ 0 ].location.latitude, lng: friends[ 0 ].location.longitude } );
             }
             console.log( "Got friend location" );
+        }
+    }, 10000 );
+
+    useInterval( async () => {
+        if ( token ) {
+            const response = await axiosInstance.post( "/users/update-user-location", { latitude: ownLocation.lat, longitude: ownLocation.lng },
+                    { headers: { Authorization: "Bearer " + token } } );
+            if ( response.data && response.data.length > 0 ) {
+                setSyncRequests( response.data );
+            }
         }
     }, 10000 );
 
