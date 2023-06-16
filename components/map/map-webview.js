@@ -11,6 +11,8 @@ import Compass from "../compass";
 const OWN_MARKER = "ownMarker";
 const FRIEND_MARKER = "friendMarker";
 
+const toleratedDeviation = 0.02; //0.01 Kilometer = 10 Meter
+
 const MapWebview = ( { trackedFriends, token } ) => {
 
     const mapRef = useRef( null );
@@ -19,8 +21,16 @@ const MapWebview = ( { trackedFriends, token } ) => {
         lat: 37.78825,
         lng: -122.4324
     } );
+    const [oldOwnLocation , setOldOwnLocation ] = useState( {
+        lat: 37.78825,
+        lng: -122.4324
+    } );
 
     const [ friendLocation, setFriendLocation ] = useState( {
+        lat: 0,
+        lng: 0
+    } );
+    const [ oldFriendLocation, setOldFriendLocation ] = useState( {
         lat: 0,
         lng: 0
     } );
@@ -37,13 +47,17 @@ const MapWebview = ( { trackedFriends, token } ) => {
 
     const [ firstRender, setFirstRender ] = useState( true );
 
+    const [ hasLocationPermission , setHasLocationPermission ] = useState( false );
+
 
     const verifyPermissions = async () => {
         const result = await Location.requestForegroundPermissionsAsync();
         if ( result.status !== "granted" ) {
             Alert.alert( "No Permissions!", "Please give location permissions to use this app.", [ { title: "Ok" } ] );
+            setHasLocationPermission(false);
             return false;
         } else {
+            setHasLocationPermission(true);
             return true;
         }
     };
@@ -123,6 +137,9 @@ const MapWebview = ( { trackedFriends, token } ) => {
         routingControl = null;
         ` );
         setIsRouting( false );
+        setRouteButtonColor ( "green" );
+        setDirectionsButtonColor ( "green" );
+        setIsShowingDirections ( false );
     };
 
     const hideDirections = () => {
@@ -137,14 +154,48 @@ const MapWebview = ( { trackedFriends, token } ) => {
         ` );
     };
 
+    const updateRoutingWaypoints = () => {
+        mapRef.current.injectJavaScript( `
+            routingControl.setWaypoints([
+                L.latLng(${ ownLocation.lat }, ${ ownLocation.lng }),
+                L.latLng(${ friendLocation.lat }, ${ friendLocation.lng })
+            ]);
+        ` );
+    }
+
+    const degreesToRadians = (degrees) => {
+        return degrees * Math.PI / 180;
+    };
+      
+    const distanceInKm = (lat1, lon1, lat2, lon2) => {
+        const earthRadiusKm = 6371;
+        
+        var dLat = degreesToRadians(lat2-lat1);
+        var dLon = degreesToRadians(lon2-lon1);
+        
+        lat1 = degreesToRadians(lat1);
+        lat2 = degreesToRadians(lat2);
+        
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        
+        return earthRadiusKm * c;
+    };
+
     useEffect( () => {
         getLocationHandler();
         setFirstRender(false);
     }, [] );
 
     useEffect( () => {
-        centerOnPosition( ownLocation.lat, ownLocation.lng, 16 );
         setMarker( OWN_MARKER, ownLocation.lat, ownLocation.lng );
+
+        //verhindert die bei größeren Strecken zeitintensive neue Berechnung der Runde bei Abweichungen unter der Toleranz
+        if (distanceInKm(ownLocation.lat, ownLocation.lng, oldOwnLocation.lat, oldOwnLocation.lng) > toleratedDeviation) {
+            updateRoutingWaypoints();
+        }
+        setOldOwnLocation(ownLocation);
     }, [ ownLocation ] );
 
     useEffect( () => {
@@ -152,18 +203,17 @@ const MapWebview = ( { trackedFriends, token } ) => {
             if (!friendMarkerAdded) {
                 addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng, "Hallo" );
                 changeMarkerColor( FRIEND_MARKER, "Red");
+                updateRoutingWaypoints();
                 setFriendMarkerAdded( true );
             } else {
                 setMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng );
-                mapRef.current.injectJavaScript( `
-                routingControl.setWaypoints([
-                    L.latLng(${ ownLocation.lat }, ${ ownLocation.lng }),
-                    L.latLng(${ friendLocation.lat }, ${ friendLocation.lng })
-                ]);
-                ` );
+                //verhindert die bei größeren Strecken zeitintensive neue Berechnung der Runde bei Abweichungen unter der Toleranz
+                if (distanceInKm(friendLocation.lat, friendLocation.lng, oldFriendLocation.lat, oldFriendLocation.lng) > toleratedDeviation) {
+                    updateRoutingWaypoints();
+                }
+                setOldFriendLocation(friendLocation);
             }
         }
-        
     }, [ friendLocation ] );
 
     useInterval( async () => {
@@ -172,21 +222,36 @@ const MapWebview = ( { trackedFriends, token } ) => {
             const friends = await Promise.all( trackedFriends.map(
                     friend => axiosInstance.post( "/permission/get-location-from-friend",
                             { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
-            console.log(friends[0].data);
             //erstmal immer nur den ersten Freund tracken
-            if ( friends[ 0 ].hasOwnProperty( "location" ) ) {
-                setFriendLocation( { lat: friends[ 0 ].location.latitude, lng: friends[ 0 ].location.longitude } );
+            if ( friends[ 0 ].data.hasOwnProperty( "location" ) ) {
+                var newLat = friends[ 0 ].data.location.latitude;
+                var newLng = friends[ 0 ].data.location.longitude;
+                setFriendLocation( { lat: newLat, lng: newLng } );
+                console.log( "Set friend location" );
             }
-            console.log( "Got friend location" );
         }
     }, 10000 );
 
     useInterval( async () => {
-        if ( token ) {
-            const response = await axiosInstance.post( "/users/update-user-location", { latitude: ownLocation.lat, longitude: ownLocation.lng },
-                    { headers: { Authorization: "Bearer " + token } } );
-            if ( response.data && response.data.length > 0 ) {
-                setSyncRequests( response.data );
+        var ownLat;
+        var ownLng;
+        if (hasLocationPermission) {
+            try {
+                const location = await Location.getCurrentPositionAsync( { timeout: 5000 } );
+                ownLat = location.coords.latitude;
+                ownLng = location.coords.longitude;
+                setOwnLocation( { lat: ownLat, lng: ownLng } );
+
+                if ( token ) {
+                    const response = await axiosInstance.post( "/users/update-user-location", { latitude: ownLat, longitude: ownLng },
+                            { headers: { Authorization: "Bearer " + token } } );
+                    if ( response.data && response.data.length > 0 ) {
+                        setSyncRequests( response.data );
+                    }
+                }
+
+            } catch ( err ) {
+                Alert.alert( "Could not get location!", "Please try again later and make sure your location is enabled", [ { title: "Ok" } ] );
             }
         }
     }, 10000 );
@@ -284,6 +349,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
                 <Button title="Remove" onPress={ () => {
                     if (friendMarkerAdded) {
                         removeMarker( FRIEND_MARKER );
+                        removeRoute();
                         setFriendMarkerAdded( false );
                     }
                 } }/>
