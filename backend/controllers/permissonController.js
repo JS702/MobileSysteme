@@ -38,8 +38,17 @@ const askForPermission = asyncHandler(async (req, res) => {
   });
 
   if (relationshipExist) {
-    res.status(400);
-    throw new Error("Already sent");
+    if (relationshipExist.status !== "pending") {
+      relationshipExist.status = "pending";
+      await relationshipExist.save();
+
+      res.status(200);
+      res.json(relationshipExist);
+      return;
+    }
+    res.status(200);
+    res.json(relationshipExist);
+    return;
   }
 
   const relationShip = await Permission.create({
@@ -64,7 +73,7 @@ const getRequestFromFriend = asyncHandler(async (req, res) => {
 
   const listOfRequest = await Permission.find({
     friend: user.telefon,
-    status: "pending",
+    /* status: "pending", */
   });
 
   if (!listOfRequest) {
@@ -122,8 +131,25 @@ const declineRequestFromFriend = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("No User");
   }
-  const request = await Permission.deleteOne({ _id: id });
+
+  const request = await Permission.findById(id);
+
+  if (!request) {
+    res.status(400);
+    throw new Error("No request found");
+  }
+
+  request.status = "declined";
+  await request.save();
+
   res.status(200).json(request);
+
+  /* if (!user) {
+    res.status(400);
+    throw new Error("No User");
+  }
+  const request = await Permission.deleteOne({ _id: id }); 
+  res.status(200).json(request);*/
 });
 
 const getLocationFromFriend = asyncHandler(async (req, res) => {
@@ -137,12 +163,22 @@ const getLocationFromFriend = asyncHandler(async (req, res) => {
 
   if (!permission) {
     res.status(400);
-    throw new Error("No request was found or declined");
+    throw new Error("No request was found");
   }
 
   if (permission.status === "pending") {
     res.status(400);
     throw new Error("pending request");
+  }
+
+  if (permission.status === "pending") {
+    res.status(400);
+    throw new Error("declined request");
+  }
+
+  if (permission.status === "declined") {
+    res.status(400);
+    throw new Error("declined request");
   }
 
   if (permission.status === "accepted") {
