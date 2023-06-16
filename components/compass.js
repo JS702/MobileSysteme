@@ -5,7 +5,7 @@ import Icon from "react-native-vector-icons/Entypo";
 
 Icon.loadFont();
 
-const Compass = ({ angle, ownLocation, friendLocation, distance }) => {
+const Compass = ({ ownLocation, friendLocation, distance }) => {
   const [subscription, setSubscription] = useState(null);
   const [magnetometer, setMagnetometer] = useState(0);
 
@@ -22,7 +22,7 @@ const Compass = ({ angle, ownLocation, friendLocation, distance }) => {
       friendLocation.lat - ownLocation.lat,
     ];
     const theta = Math.atan2(vector[1], vector[0]);
-    return theta * (180 / Math.PI);
+    return theta * (180 / Math.PI) + 180;
   };
 
   const _toggle = () => {
@@ -88,17 +88,12 @@ const Compass = ({ angle, ownLocation, friendLocation, distance }) => {
           height: 60,
           justifyContent: "center",
           alignItems: "center",
+          transform: [
+            { rotate: `${magnetometer + calculateDir() - 45}deg` }, // Adjusting the angle by -45 degrees
+          ],
         }}
       >
-        <Icon
-          name="direction"
-          color="white"
-          size={30}
-          style={{
-            resizeMode: "contain",
-            transform: `rotate(${45 - 360 - magnetometer + calculateDir()}deg)`,
-          }}
-        />
+        <Icon name="direction" color="white" size={30} />
       </View>
     </View>
   );
