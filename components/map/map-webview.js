@@ -240,16 +240,15 @@ const MapWebview = ( { trackedFriend, token } ) => {
     }, [ friendLocation ] );
 
     useInterval( async () => {
-        if ( trackedFriend.length > 0 ) {
+        console.log(trackedFriend);
+        if ( trackedFriend !== null ) {
             console.log( "Getting friend location..." );
-            const friends = await Promise.all( trackedFriend.map(
-                    friend => axiosInstance.post( "/permission/get-location-from-friend",
-                            { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
+            const response = await axiosInstance.post( "/permission/get-location-from-friend", { friendsTelefon: trackedFriend },
+                { headers: { Authorization: "Bearer " + token } } );
+            console.log(response.data);
             //erstmal immer nur den ersten Freund tracken
-            if ( friends[ 0 ].data.hasOwnProperty( "location" ) ) {
-                var newLat = friends[ 0 ].data.location.latitude;
-                var newLng = friends[ 0 ].data.location.longitude;
-                setFriendLocation( { lat: newLat, lng: newLng } );
+            if ( response.data.hasOwnProperty( "location" ) ) {
+                setFriendLocation( { lat: response.data.location.latitude, lng: response.data.location.longitude } );
                 console.log( "Set friend location" );
             }
         }
