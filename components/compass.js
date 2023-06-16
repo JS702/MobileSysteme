@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Magnetometer } from "expo-sensors";
 import { Icon } from "@rneui/themed";
 
 
-const Compass = ( { angle, ownLocation, friendLocation } ) => {
+const Compass = ( { angle, ownLocation, friendLocation, distance } ) => {
 
     const [ subscription, setSubscription ] = useState( null );
     const [ magnetometer, setMagnetometer ] = useState( 0 );
@@ -69,23 +69,39 @@ const Compass = ( { angle, ownLocation, friendLocation } ) => {
     return (
         <View style={ { backgroundColor:  "#00000088",
                         borderRadius: 90,
-                        marginTop: 8,
+                        borderTopLeftRadius: 0,
+                        borderTopRightRadius: 0,
                         width: 60,
-                        height: 60,
-                        justifyContent: "center",
+                        height: 80,
+                        justifyContent: "flex-end",
                         alignItems: "center"
                     } }>
+            <Text style={ {
+                        color: "white",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: 11
+                    } }>{ distance }</Text>
+            <View style={ { //backgroundColor:  "#ff000088",
+                            borderRadius: 90,
+                            //marginTop: 8,
+                            width: 60,
+                            height: 60,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        } }>
 
-            <Icon
-                type="entypo"
-                name="direction"
-                color="white"
-                size={30}
-                style={ {
-                    resizeMode: "contain",
-                    transform: "".concat( "rotate(", 45 - 360 - magnetometer + caculauteDir(), "deg)" )
-                } }   
-            />
+                <Icon
+                    type="entypo"
+                    name="direction"
+                    color="white"
+                    size={30}
+                    style={ {
+                        resizeMode: "contain",
+                        transform: "".concat( "rotate(", 45 - 360 - magnetometer + caculauteDir(), "deg)" )
+                    } }   
+                />
+            </View>
         </View>
     );
 };

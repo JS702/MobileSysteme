@@ -35,6 +35,8 @@ const MapWebview = ( { trackedFriends, token } ) => {
         lng: 0
     } );
 
+    const [ distance, setDistance ] = useState("376 m")
+
     const [ latSliderValue, setLatSliderValue ] = useState( 0 );
     const [ lngSliderValue, setLngSliderValue ] = useState( 0 );
 
@@ -46,6 +48,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
     const [ directionsButtonColor, setDirectionsButtonColor ] = useState( "green" );
 
     const [ firstRender, setFirstRender ] = useState( true );
+    const [ locationUpdates, setLocationUpdates ] = useState ( 0 );
 
     const [ hasLocationPermission , setHasLocationPermission ] = useState( false );
 
@@ -183,12 +186,28 @@ const MapWebview = ( { trackedFriends, token } ) => {
         return earthRadiusKm * c;
     };
 
+    const caculauteDist = (lat1, lon1, lat2, lon2) => {
+        const distance = distanceInKm(lat1, lon1, lat2, lon2);
+        if (distance < 1) {
+            return Math.round((distance * 1000)) + " m";
+        } else {
+            return (Math.round(distance)) + " km";
+        }
+    };
+
     useEffect( () => {
         getLocationHandler();
         setFirstRender(false);
     }, [] );
 
     useEffect( () => {
+        if (locationUpdates < 2) {
+            if (locationUpdates === 1) {
+                centerOnPosition(ownLocation.lat, ownLocation.lng, 16);
+            }
+            setLocationUpdates(locationUpdates + 1);
+        }
+        
         setMarker( OWN_MARKER, ownLocation.lat, ownLocation.lng );
 
         //verhindert die bei größeren Strecken zeitintensive neue Berechnung der Runde bei Abweichungen unter der Toleranz
@@ -196,6 +215,9 @@ const MapWebview = ( { trackedFriends, token } ) => {
             updateRoutingWaypoints();
         }
         setOldOwnLocation(ownLocation);
+        if (friendMarkerAdded) {
+            setDistance(caculauteDist(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng));
+        }
     }, [ ownLocation ] );
 
     useEffect( () => {
@@ -213,6 +235,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
                 }
                 setOldFriendLocation(friendLocation);
             }
+            setDistance(caculauteDist(ownLocation.lat, ownLocation.lng, friendLocation.lat, friendLocation.lng));
         }
     }, [ friendLocation ] );
 
@@ -279,7 +302,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
             <>
                 <StatusBar barStyle="dark-content"/>
                 <View style={ styles.compassWrapper } pointerEvents="box-none">
-                    { friendMarkerAdded && <Compass style={ styles.compass } angle={ 90 } ownLocation={ ownLocation } friendLocation={ friendLocation }/> }
+                    { friendMarkerAdded && <Compass style={ styles.compass } angle={ 90 } ownLocation={ ownLocation } friendLocation={ friendLocation } distance={ distance }/> }
                 </View>
                 <SafeAreaView style={ styles.Container }>
                     <WebView
@@ -291,8 +314,7 @@ const MapWebview = ( { trackedFriends, token } ) => {
                                     Linking.openURL(request.url)
                                     return false
                                 } else return true
-                            }}
-                              
+                            }} 
                     />
                     <FAB //Center Button
                             style={ styles.centerButton }
