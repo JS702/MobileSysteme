@@ -89,7 +89,7 @@ const Compass = ({ ownLocation, friendLocation, distance }) => {
           justifyContent: "center",
           alignItems: "center",
           transform: [
-            { rotate: `${magnetometer + calculateDir() - 45}deg` }, // Adjusting the angle by -45 degrees
+            { rotate: `${magnetometer + calculateDir() - 45 + 360}deg` }, // Adjusting the angle by -45 degrees
           ],
         }}
       >
