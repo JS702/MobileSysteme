@@ -6,6 +6,7 @@ import { StyleSheet } from "react-native";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { transformNumber } from "../common/transformNumber";
+import { Icon } from "@rneui/themed";
 
 
 const FriendPanel = ( { style, token, trackedFriend, setTrackedFriend, friendsTracking, setFriendsTracking, trackFriend } ) => {
@@ -45,7 +46,14 @@ const FriendPanel = ( { style, token, trackedFriend, setTrackedFriend, friendsTr
 
     return (
             <View style={ style }>
-                <Button title={ "Refresh" } onPress={ refreshContacts }/>
+                <Icon
+                    type="ionicons"
+                    name="refresh"
+                    color="white"
+                    size={30}
+                    style={ styles.refreshButton }
+                    onPress= { refreshContacts }
+                />
                 <View style={ styles.sidebar }>
                     <FlatList
                             data={ contacts }
@@ -63,19 +71,17 @@ const FriendPanel = ( { style, token, trackedFriend, setTrackedFriend, friendsTr
 
 
 const styles = StyleSheet.create( {
-    baseLayout: {
-        marginTop: "10%"
-    },
     sidebar: {
         height: "100%",
+        borderBottomRightRadius: 10,
         marginLeft: 0,
-        marginRight: "auto",
-        backgroundColor: "#69b8f5"
+        backgroundColor: "#00000088"
     },
-    closeButton: {
-        marginRight: 5,
-        marginLeft: "auto"
-    }
+    refreshButton: {
+        resizeMode: "contain",
+        backgroundColor: "#00000088",
+        borderTopRightRadius: 10,
+    },
 } );
 
 export default FriendPanel;

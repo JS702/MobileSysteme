@@ -52,7 +52,8 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
 
 const styles = StyleSheet.create( {
     item: {
-        marginLeft: 10
+        marginLeft: 10,
+        color: "white",
     }
 
 } );

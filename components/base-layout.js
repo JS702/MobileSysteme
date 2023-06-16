@@ -149,8 +149,8 @@ const styles = StyleSheet.create( {
     panel: {
         position: "absolute",
         zIndex: 2,
-        height: "100%"
-
+        height: "100%",
+        width: "33%"
     },
     friendsButton: {
         position: "absolute",
