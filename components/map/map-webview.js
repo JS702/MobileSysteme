@@ -13,7 +13,7 @@ const FRIEND_MARKER = "friendMarker";
 
 const toleratedDeviation = 0.02; //0.01 Kilometer = 10 Meter
 
-const MapWebview = ( { trackedFriends, token } ) => {
+const MapWebview = ( { trackedFriend, token } ) => {
 
     const mapRef = useRef( null );
 
@@ -240,9 +240,9 @@ const MapWebview = ( { trackedFriends, token } ) => {
     }, [ friendLocation ] );
 
     useInterval( async () => {
-        if ( trackedFriends.length > 0 ) {
+        if ( trackedFriend.length > 0 ) {
             console.log( "Getting friend location..." );
-            const friends = await Promise.all( trackedFriends.map(
+            const friends = await Promise.all( trackedFriend.map(
                     friend => axiosInstance.post( "/permission/get-location-from-friend",
                             { friendsTelefon: friend }, { headers: { Authorization: "Bearer " + token } } ) ) );
             //erstmal immer nur den ersten Freund tracken

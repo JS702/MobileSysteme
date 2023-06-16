@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { transformNumber } from "../common/transformNumber";
 
 
-const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends, friendsTracking, setFriendsTracking } ) => {
+const FriendPanel = ( { style, token, trackedFriend, setTrackedFriend, friendsTracking, setFriendsTracking, trackFriend } ) => {
 
     const [ contacts, setContacts ] = useState( [] );
     const setCachedContacts = async () => {
@@ -49,10 +49,11 @@ const FriendPanel = ( { style, token, trackedFriends, setTrackedFriends, friends
                 <View style={ styles.sidebar }>
                     <FlatList
                             data={ contacts }
-                            renderItem={ ( { item } ) => <FriendItem friendData={ item } trackedFriends={ trackedFriends }
-                                                                     setTrackedFriends={ setTrackedFriends } token={ token }
+                            renderItem={ ( { item } ) => <FriendItem friendData={ item } trackedFriend={ trackedFriend }
+                                                                     setTrackedFriend={ setTrackedFriend } token={ token }
                                                                      friendsTracking={ friendsTracking }
-                                                                     setFriendsTracking={ setFriendsTracking }/> }
+                                                                     setFriendsTracking={ setFriendsTracking }
+                                                                     trackFriend={ trackFriend }/> }
                             keyExtractor={ item => item?.id?.toString() }
                     />
                 </View>

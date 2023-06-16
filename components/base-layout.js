@@ -20,7 +20,11 @@ const BaseLayout = () => {
 
     const [ syncRequests, setSyncRequests ] = useState( [] );
 
-    const [ trackedFriends, setTrackedFriends ] = useState( [] );
+    const [ pendingSyncRequests, setPendingSyncRequests ] = useState( [] );
+
+    const [ trackedFriend, setTrackedFriend ] = useState( null );
+
+    const [ acceptedTracking, setAcceptedTracking ] = useState( false );
 
     const [ friendsTracking, setFriendsTracking ] = useState( [] );
 
@@ -43,6 +47,26 @@ const BaseLayout = () => {
         }
     }, 10000 );
 
+    useInterval( async () => {
+        if ( trackedFriend && !acceptedTracking ) {
+            axiosInstance.post( "/permission/permission-request", { friendsTelefon: trackedFriend.number },
+                    { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
+                if ( r.data.state === "accepted" ) {
+                    setAcceptedTracking( true );
+                }
+                if ( r.data.state === "declined" ) {
+                    setTrackedFriend( null );
+                }
+            } );
+        }
+    }, 5000 );
+
+    const locationRequest = ( number ) => {
+        axiosInstance.post( "/permission/permission-request", { friendsTelefon: number },
+                { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
+            setTrackedFriend( { number: number, state: r.data.state } );
+        } );
+    };
 
     const login = () => {
         axiosInstance.post( "/users/login", { telefon: phoneNumber } ).then( r => {
@@ -57,13 +81,14 @@ const BaseLayout = () => {
     };
 
     const acceptRequest = ( request, accepted ) => {
-        setSyncRequests( syncRequests.slice( 1 ) );
         if ( accepted ) {
             axiosInstance.post( "/permission/accept-request", { id: request._id }, { headers: { Authorization: "Bearer " + token } } )
                     .then( r => {
-                        setFriendsTracking( [ ...friendsTracking, r.data.user ] );
+                        setFriendsTracking( [ ...friendsTracking, { number: r.data.user, requestId: request._id } ] );
+                        setPendingSyncRequests( pendingSyncRequests.slice( 1 ) );
                     } );
         } else {
+            setSyncRequests( syncRequests.slice( 1 ) );
             axiosInstance.post( "/permission/decline-request", { id: request._id }, { headers: { Authorization: "Bearer " + token } } );
         }
     };
@@ -75,7 +100,9 @@ const BaseLayout = () => {
     };
 
     useEffect( () => {
+        setPendingSyncRequests( syncRequests.filter( request => request.state === "pending" ) );
         if ( syncRequests && syncRequests.length > 0 ) {
+            setFriendsTracking( syncRequests.map( request => ( { friend: request.user, id: request._id } ) ) );
             setModalVisible( true );
         } else {
             setModalVisible( false );
@@ -101,11 +128,11 @@ const BaseLayout = () => {
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
                               acceptRequest={ acceptRequest } request={ syncRequests[ 0 ] }/>
 
-                { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriends={ trackedFriends }
-                                                setTrackedFriends={ setTrackedFriends } friendsTracking={ friendsTracking }
-                                                setFriendsTracking={ setFriendsTracking }/> }
+                { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriend={ trackedFriend }
+                                                setTrackedFriend={ setTrackedFriend } friendsTracking={ friendsTracking }
+                                                setFriendsTracking={ setFriendsTracking } trackFriend={ locationRequest }/> }
 
-                <MapWebview trackedFriends={ trackedFriends } token={ token }/>
+                <MapWebview trackedFriend={ trackedFriend } token={ token }/>
 
                 { friendsTracking.length > 0 && <Button title={ "Stop getting Tracked" } onPress={ stopGettingTracked }/> }
 
