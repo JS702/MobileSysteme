@@ -13,7 +13,7 @@ const FRIEND_MARKER = "friendMarker";
 
 const toleratedDeviation = 0.02; //0.01 Kilometer = 10 Meter
 
-const MapWebview = ( { trackedFriend, token } ) => {
+const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracking } ) => {
 
     const mapRef = useRef( null );
 
@@ -240,17 +240,31 @@ const MapWebview = ( { trackedFriend, token } ) => {
     }, [ friendLocation ] );
 
     useInterval( async () => {
+    try {
         if ( trackedFriend?.status === "accepted" ) {
             console.log( "Getting friend location..." );
             const response = await axiosInstance.post( "/permission/get-location-from-friend", { friendsTelefon: trackedFriend.number },
                 { headers: { Authorization: "Bearer " + token } } );
             console.log(response.data);
-            //erstmal immer nur den ersten Freund tracken
+            
             if ( response.data.hasOwnProperty( "location" ) ) {
                 setFriendLocation( { lat: response.data.location.latitude, lng: response.data.location.longitude } );
                 console.log( "Set friend location" );
             }
+        } else if ( trackedFriend?.status === "pending") {
+            console.log("Status pending");
+        } else if ( !trackedFriend ) {
+            console.log("Friend is null or undefinded");
+            removeMarker( FRIEND_MARKER );
+            removeRoute();
+            setFriendMarkerAdded( false );
         }
+    } catch (error) {
+        console.log(error);
+        setTrackedFriend ( null );
+        setAcceptedTracking( false );
+    }
+        
     }, 10000 );
 
     useInterval( async () => {

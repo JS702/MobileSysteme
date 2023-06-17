@@ -57,9 +57,10 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
                     }
                     { isTracked &&
                         <Icon
+                            { ...trackedFriend?.status === "pending" ? { color: "red" } : { color: "green" } }
                             type="material"
                             name="location-off"
-                            color="white"
+                            //color="white"
                             size={30}
                             onPress={ stopTracking }
                         />
