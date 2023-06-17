@@ -51,9 +51,8 @@ const Compass = ({ ownLocation, friendLocation, distance }) => {
     if (magnetometer) {
       let { x, y, z } = magnetometer;
       angle = Math.atan2(y, x) * (180 / Math.PI);
-      if (angle < 0) {
-        angle += 360;
-      }
+      angle = (angle + 360) % 360;
+      angle += 30;
     }
     return Math.round(angle);
   };
@@ -89,7 +88,7 @@ const Compass = ({ ownLocation, friendLocation, distance }) => {
           justifyContent: "center",
           alignItems: "center",
           transform: [
-            { rotate: `${magnetometer + calculateDir() - 45 + 360}deg` }, // Adjusting the angle by -45 degrees
+            { rotate: `${360 - (magnetometer + calculateDir())}deg` },
           ],
         }}
       >
