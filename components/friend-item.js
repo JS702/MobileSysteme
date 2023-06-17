@@ -42,7 +42,8 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
             <View>
                 <Text style={ styles.item }>{ friendData.name }</Text>
                 { !isTracked &&
-                        <Button title={ "Find" } onPress={ () => trackFriend( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) }/> }
+                        <Button title={ "Find" } disabled={ trackedFriend?.status === "pending" }
+                                onPress={ () => trackFriend( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) }/> }
                 { isTracked && <Button title={ "Stop" } onPress={ stopTracking }/> }
                 { isTracking && <Button title={ "Disconnect" } onPress={ stopGettingTracked }/> }
             </View>

@@ -50,7 +50,7 @@ const BaseLayout = () => {
 
     useInterval( async () => {
         if ( trackedFriend && !acceptedTracking ) {
-            axiosInstance.post( "/permission/permission-request", { friendsTelefon: trackedFriend.number },
+            axiosInstance.post( "/permission/", { friendsTelefon: trackedFriend.number }, //TODO Route
                     { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
                 if ( r.data.status === "accepted" ) {
                     setAcceptedTracking( true );

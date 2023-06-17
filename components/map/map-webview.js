@@ -240,10 +240,9 @@ const MapWebview = ( { trackedFriend, token } ) => {
     }, [ friendLocation ] );
 
     useInterval( async () => {
-        console.log(trackedFriend);
-        if ( trackedFriend !== null ) {
+        if ( trackedFriend ) {
             console.log( "Getting friend location..." );
-            const response = await axiosInstance.post( "/permission/get-location-from-friend", { friendsTelefon: trackedFriend },
+            const response = await axiosInstance.post( "/permission/get-location-from-friend", { friendsTelefon: trackedFriend.number },
                 { headers: { Authorization: "Bearer " + token } } );
             console.log(response.data);
             //erstmal immer nur den ersten Freund tracken
