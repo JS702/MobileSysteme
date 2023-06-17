@@ -81,6 +81,10 @@ const styles = StyleSheet.create( {
         resizeMode: "contain",
         backgroundColor: "#00000088",
         borderTopRightRadius: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderBottomWidth: 3,
+        borderBottomColor: "#b3b3b3"
     },
 } );
 
