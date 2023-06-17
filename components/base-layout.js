@@ -96,7 +96,7 @@ const BaseLayout = () => {
     };
 
     const stopGettingTracked = () => {
-        axiosInstance.delete( "/delete-all-request", { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
+        axiosInstance.delete( "/permission/delete-all-request", { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
             setFriendsTracking( [] );
         } );
     };

@@ -10,10 +10,11 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
 
     const [ isTracking, setIsTracking ] = useState( false );
 
-
     useEffect( () => {
         if ( trackedFriend?.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ) {
             setIsTracked( true );
+        } else {
+            setIsTracked( false );
         }
     }, [ trackedFriend ] );
 

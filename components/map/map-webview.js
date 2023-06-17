@@ -254,7 +254,7 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
         } else if ( trackedFriend?.status === "pending") {
             console.log("Status pending");
         } else if ( !trackedFriend ) {
-            console.log("Friend is null or undefinded");
+            console.log("Friend is null or undefined");
             removeMarker( FRIEND_MARKER );
             removeRoute();
             setFriendMarkerAdded( false );
