@@ -62,6 +62,41 @@ const askForPermission = asyncHandler(async (req, res) => {
   }
 });
 
+const getMyRequestToFriend = asyncHandler(async (req, res) => {
+  let friendsTelefon = unifyNumbers(req.body.friendsTelefon);
+  const userJson = req.user;
+  const user = await User.findById(userJson._id);
+
+  const friend = await User.findOne({ telefon: friendsTelefon });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("No User");
+  }
+
+  if (!friendsTelefon) {
+    res.status(400);
+    throw new Error("Add friend name");
+  }
+
+  if (!friend) {
+    res.status(400);
+    throw new Error("No Friend with that name");
+  }
+
+  const relationshipExist = await Permission.findOne({
+    user: user.telefon,
+    friend: friend.telefon,
+  });
+
+  if (!relationshipExist) {
+    res.status(400);
+    throw new Error("No request was found");
+  }
+  res.status(201);
+  res.json(relationshipExist);
+});
+
 const getRequestFromFriend = asyncHandler(async (req, res) => {
   const userJson = req.user;
   const user = await User.findById(userJson._id);
@@ -194,4 +229,5 @@ module.exports = {
   declineRequestFromFriend,
   getLocationFromFriend,
   deleteAllRequestsFromFriend,
+  getMyRequestToFriend,
 };

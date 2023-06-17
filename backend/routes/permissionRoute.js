@@ -6,11 +6,13 @@ const {
   declineRequestFromFriend,
   getLocationFromFriend,
   deleteAllRequestsFromFriend,
+  getMyRequestToFriend,
 } = require("../controllers/permissonController");
 const router = express.Router();
 const { auth } = require("../middleware/authUser");
 
 router.post("/permission-request", auth, askForPermission);
+router.post("/get-request", auth, getMyRequestToFriend);
 router.delete("/delete-all-request", auth, deleteAllRequestsFromFriend);
 
 router.get("/get-request-from-friend", auth, getRequestFromFriend);
