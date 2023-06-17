@@ -12,13 +12,13 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
 
 
     useEffect( () => {
-        if ( trackedFriend && trackedFriend.number === friendData.phoneNumbers[ 0 ].number ) {
+        if ( trackedFriend?.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ) {
             setIsTracked( true );
         }
     }, [ trackedFriend ] );
 
     useEffect( () => {
-        if ( friendsTracking.length > 0 &&
+        if ( friendsTracking?.length > 0 &&
                 friendsTracking.filter( friend => friend.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ).length > 0 ) {
             setIsTracking( true );
         }

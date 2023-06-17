@@ -50,10 +50,11 @@ const BaseLayout = () => {
 
     useInterval( async () => {
         if ( trackedFriend && !acceptedTracking ) {
-            axiosInstance.post( "/permission/", { friendsTelefon: trackedFriend.number }, //TODO Route
+            axiosInstance.post( "/permission/get-request", { friendsTelefon: trackedFriend.number },
                     { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
                 if ( r.data.status === "accepted" ) {
                     setAcceptedTracking( true );
+                    setTrackedFriend( { number: trackedFriend.number, status: "accepted" } );
                 }
                 if ( r.data.status === "declined" ) {
                     setTrackedFriend( null );
@@ -89,7 +90,7 @@ const BaseLayout = () => {
                         setPendingSyncRequests( pendingSyncRequests.slice( 1 ) );
                     } );
         } else {
-            setSyncRequests( syncRequests.slice( 1 ) );
+            setPendingSyncRequests( pendingSyncRequests.slice( 1 ) );
             axiosInstance.post( "/permission/decline-request", { id: request._id }, { headers: { Authorization: "Bearer " + token } } );
         }
     };
@@ -102,7 +103,6 @@ const BaseLayout = () => {
 
     useEffect( () => {
         if ( pendingSyncRequests && pendingSyncRequests.length > 0 ) {
-            setFriendsTracking( syncRequests.map( request => ( { friend: request.user, id: request._id } ) ) );
             setModalVisible( true );
         } else {
             setModalVisible( false );

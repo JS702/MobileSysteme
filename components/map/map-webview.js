@@ -240,7 +240,7 @@ const MapWebview = ( { trackedFriend, token } ) => {
     }, [ friendLocation ] );
 
     useInterval( async () => {
-        if ( trackedFriend ) {
+        if ( trackedFriend?.status === "accepted" ) {
             console.log( "Getting friend location..." );
             const response = await axiosInstance.post( "/permission/get-location-from-friend", { friendsTelefon: trackedFriend.number },
                 { headers: { Authorization: "Bearer " + token } } );
