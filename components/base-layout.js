@@ -43,6 +43,7 @@ const BaseLayout = () => {
                     { headers: { Authorization: "Bearer " + token } } );
             if ( response.data && response.data.length > 0 ) {
                 setSyncRequests( response.data );
+                setPendingSyncRequests( response.data.filter( request => request.status === "pending" ) );
             }
         }
     }, 10000 );
@@ -51,10 +52,10 @@ const BaseLayout = () => {
         if ( trackedFriend && !acceptedTracking ) {
             axiosInstance.post( "/permission/permission-request", { friendsTelefon: trackedFriend.number },
                     { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
-                if ( r.data.state === "accepted" ) {
+                if ( r.data.status === "accepted" ) {
                     setAcceptedTracking( true );
                 }
-                if ( r.data.state === "declined" ) {
+                if ( r.data.status === "declined" ) {
                     setTrackedFriend( null );
                 }
             } );
@@ -64,7 +65,7 @@ const BaseLayout = () => {
     const locationRequest = ( number ) => {
         axiosInstance.post( "/permission/permission-request", { friendsTelefon: number },
                 { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
-            setTrackedFriend( { number: number, state: r.data.state } );
+            setTrackedFriend( { number: number, status: r.data.status } );
         } );
     };
 
@@ -100,14 +101,14 @@ const BaseLayout = () => {
     };
 
     useEffect( () => {
-        setPendingSyncRequests( syncRequests.filter( request => request.state === "pending" ) );
-        if ( syncRequests && syncRequests.length > 0 ) {
+        if ( pendingSyncRequests && pendingSyncRequests.length > 0 ) {
             setFriendsTracking( syncRequests.map( request => ( { friend: request.user, id: request._id } ) ) );
             setModalVisible( true );
         } else {
             setModalVisible( false );
         }
-    }, [ syncRequests ] );
+    }, [ pendingSyncRequests ] );
+
 
     if ( !token ) {
         return (
@@ -125,8 +126,8 @@ const BaseLayout = () => {
                         color="green"
                         onPress={ togglePanel }
                 />
-                <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ syncRequests }
-                              acceptRequest={ acceptRequest } request={ syncRequests[ 0 ] }/>
+                <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ pendingSyncRequests }
+                              acceptRequest={ acceptRequest } request={ pendingSyncRequests[ 0 ] }/>
 
                 { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriend={ trackedFriend }
                                                 setTrackedFriend={ setTrackedFriend } friendsTracking={ friendsTracking }
