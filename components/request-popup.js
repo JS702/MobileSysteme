@@ -3,20 +3,20 @@ import { StyleSheet, View, Modal, Text } from "react-native";
 import { Icon } from "@rneui/themed";
 
 
-const RequestPopup = ( { style, modalVisible, acceptRequest, request } ) => {
+const RequestPopup = ( { style, modalVisible, acceptRequest, request, getName } ) => {
 
     return (
             <Modal style={ style } animationType={ "slide" } visible={ modalVisible } transparent={ true }>
                 <View style={ styles.container }>
-                    <Text style={ styles.text }>Allow {"\n"}{ request?.user }{"\n"} to get your location?</Text>
+                    <Text style={ styles.text }>Allow { "\n" }{ getName( request?.user ) }{ "\n" } to get your location?</Text>
                     <View style={ styles.container2 }>
                         <View style={ styles.declineContainer }>
                             <Icon
-                                type="feather"
-                                name="x"
-                                color="red"
-                                size={60}
-                                onPress={ () => acceptRequest( request, false ) }
+                                    type="feather"
+                                    name="x"
+                                    color="red"
+                                    size={ 60 }
+                                    onPress={ () => acceptRequest( request, false ) }
                             />
                         </View>
                         <View style={ styles.acceptContainer }>
@@ -38,7 +38,6 @@ const styles = StyleSheet.create( {
         marginTop: "70%",
         marginLeft: "15%",
         alignItems: "center",
-        backgroundColor: "white",
         width: "70%",
         height: "30%",
         flexDirection: "column",

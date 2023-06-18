@@ -62,6 +62,11 @@ const BaseLayout = () => {
         setContacts( cachedContacts );
     };
 
+    const getContactNameByNumber = ( number ) => {
+        const contact = contacts.find( contact => transformNumber( contact.phoneNumbers[ 0 ].number ) === number );
+        return contact ? contact.name : number;
+    };
+
     useEffect( () => {
         setCachedContacts();
         checkLoggedIn();
@@ -165,7 +170,7 @@ const BaseLayout = () => {
                         onPress={ togglePanel }
                 />
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ pendingSyncRequests }
-                              acceptRequest={ acceptRequest } request={ pendingSyncRequests[ 0 ] }/>
+                              acceptRequest={ acceptRequest } request={ pendingSyncRequests[ 0 ] } getName={ getContactNameByNumber }/>
 
                 { showSidePanel &&
                         <FriendPanel style={ styles.panel } token={ token } contacts={ contacts } refreshContacts={ refreshContacts }
