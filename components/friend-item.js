@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import axiosInstance from "../axios-instance";
 import { useEffect, useState } from "react";
 import { transformNumber } from "../common/transformNumber";
@@ -56,12 +56,19 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
                             disabledStyle={ styles.buttonDisabled }
                         />
                     }
-                    { isTracked &&
+
+                    { isTracked && trackedFriend?.status === "pending" &&
+                        <ActivityIndicator
+                            color="white"
+                            size={30}    
+                        />
+                    }
+
+                    { isTracked && trackedFriend?.status !== "pending" &&
                         <Icon
-                            { ...trackedFriend?.status === "pending" ? { color: "red" } : { color: "green" } }
                             type="material"
                             name="location-off"
-                            //color="white"
+                            color="white"
                             size={30}
                             onPress={ stopTracking }
                         />
