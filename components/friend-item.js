@@ -9,7 +9,6 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
     const [ isTracked, setIsTracked ] = useState( false );
 
     const [ isTracking, setIsTracking ] = useState( false );
-
     useEffect( () => {
         if ( trackedFriend?.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ) {
             setIsTracked( true );
@@ -24,7 +23,6 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
             setIsTracking( true );
         }
     }, [ friendsTracking ] );
-
 
 
     const stopTracking = () => {
@@ -44,46 +42,46 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
             <View>
                 <Text style={ styles.item }>{ friendData.name }</Text>
                 <View style={ styles.iconContainer }>
-                    <View style= { { flex: 1 } }>
-                    { !isTracked &&
-                        <Icon
-                            type="material"
-                            name="location-on"
-                            { ...trackedFriend?.status === "pending" ? { color: "#b3b3b3" } : { color: "white" } }
-                            size={30}
-                            onPress={ () => trackFriend( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) }
-                            disabled={ trackedFriend?.status === "pending" }
-                            disabledStyle={ styles.buttonDisabled }
-                        />
-                    }
+                    <View style={ { flex: 1 } }>
+                        { !isTracked &&
+                                <Icon
+                                        type="material"
+                                        name="location-on"
+                                        { ...trackedFriend?.status === "pending" ? { color: "#b3b3b3" } : { color: "white" } }
+                                        size={ 30 }
+                                        onPress={ () => trackFriend( transformNumber( friendData.phoneNumbers[ 0 ].number ) ) }
+                                        disabled={ trackedFriend?.status === "pending" }
+                                        disabledStyle={ styles.buttonDisabled }
+                                />
+                        }
 
-                    { isTracked && trackedFriend?.status === "pending" &&
-                        <ActivityIndicator
-                            color="white"
-                            size={30}    
-                        />
-                    }
+                        { isTracked && trackedFriend?.status === "pending" &&
+                                <ActivityIndicator
+                                        color="white"
+                                        size={ 30 }
+                                />
+                        }
 
-                    { isTracked && trackedFriend?.status !== "pending" &&
-                        <Icon
-                            type="material"
-                            name="location-off"
-                            color="white"
-                            size={30}
-                            onPress={ stopTracking }
-                        />
-                    }
+                        { isTracked && trackedFriend?.status !== "pending" &&
+                                <Icon
+                                        type="material"
+                                        name="location-off"
+                                        color="white"
+                                        size={ 30 }
+                                        onPress={ stopTracking }
+                                />
+                        }
                     </View>
                     { isTracking &&
-                        <View style= { { width: "50%" } }>
-                            <Icon
-                                type="material"
-                                name="location-disabled"
-                                color="white"
-                                size={30}
-                                onPress={ stopGettingTracked }
-                            /> 
-                        </View>
+                            <View style={ { width: "50%" } }>
+                                <Icon
+                                        type="material"
+                                        name="location-disabled"
+                                        color="white"
+                                        size={ 30 }
+                                        onPress={ stopGettingTracked }
+                                />
+                            </View>
                     }
                 </View>
             </View>
@@ -94,7 +92,7 @@ const styles = StyleSheet.create( {
     item: {
         marginLeft: 10,
         marginTop: 5,
-        color: "white",
+        color: "white"
     },
     iconContainer: {
         flexDirection: "row",
@@ -105,7 +103,7 @@ const styles = StyleSheet.create( {
         borderBottomColor: "#b3b3b3"
     },
     buttonDisabled: {
-        backgroundColor: "transparent",
+        backgroundColor: "transparent"
     }
 } );
 export default FriendItem;

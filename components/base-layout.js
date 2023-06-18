@@ -7,6 +7,8 @@ import RequestPopup from "./request-popup";
 import axiosInstance from "../axios-instance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useInterval } from "../common/useIntervall";
+import * as Contacts from "expo-contacts";
+import { transformNumber } from "../common/transformNumber";
 
 const BaseLayout = () => {
 
@@ -28,6 +30,43 @@ const BaseLayout = () => {
 
     const [ friendsTracking, setFriendsTracking ] = useState( [] );
 
+    const [ contacts, setContacts ] = useState( [] );
+
+    const buildPayload = ( data ) => {
+        return data.map( contact => contact.phoneNumbers[ 0 ].number.replaceAll( " ", "" ) );
+    };
+
+    const refreshContacts = async () => {
+        const { status } = await Contacts.requestPermissionsAsync();
+        if ( status === "granted" ) {
+            const { data } = await Contacts.getContactsAsync( {
+                fields: [ Contacts.Fields.PhoneNumbers, Contacts.Fields.Name ]
+            } );
+            if ( data.length > 0 ) {
+                axiosInstance.post( "/users/get-all-registered-friends", {
+                    listOfFriends: buildPayload( data )
+                } )
+                        .then( ( response ) => {
+                            const filteredContacts = data.filter(
+                                    contact => response.data.includes( transformNumber( contact.phoneNumbers[ 0 ].number ) ) );
+                            setContacts( filteredContacts );
+
+                            AsyncStorage.setItem( "contacts", JSON.stringify( filteredContacts ) );
+                        } ).catch( ( err ) => console.log( err ) );
+
+            }
+        }
+    };
+    const setCachedContacts = async () => {
+        const cachedContacts = JSON.parse( await AsyncStorage.getItem( "contacts" ) );
+        setContacts( cachedContacts );
+    };
+
+    useEffect( () => {
+        setCachedContacts();
+        checkLoggedIn();
+    }, [] );
+
     async function checkLoggedIn() {
         const token = JSON.parse( await AsyncStorage.getItem( "jwtToken" ) );
         if ( token != null ) {
@@ -35,7 +74,6 @@ const BaseLayout = () => {
         }
     }
 
-    checkLoggedIn();
 
     useInterval( async () => {
         if ( token ) {
@@ -121,27 +159,30 @@ const BaseLayout = () => {
     return (
             <SafeAreaView style={ styles.baseLayout }>
                 <FAB //Friends Button
-                    style={ styles.friendsButton }
-                    icon={ { type: "ionicons", name: "people", color: "white" } }
-                    color={ showSidePanel ? "red" : "green" }
-                    onPress={ togglePanel }
+                        style={ styles.friendsButton }
+                        icon={ { type: "ionicons", name: "people", color: "white" } }
+                        color={ showSidePanel ? "red" : "green" }
+                        onPress={ togglePanel }
                 />
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ pendingSyncRequests }
                               acceptRequest={ acceptRequest } request={ pendingSyncRequests[ 0 ] }/>
 
-                { showSidePanel && <FriendPanel style={ styles.panel } token={ token } trackedFriend={ trackedFriend }
-                                                setTrackedFriend={ setTrackedFriend } friendsTracking={ friendsTracking }
-                                                setFriendsTracking={ setFriendsTracking } trackFriend={ locationRequest }/> }
+                { showSidePanel &&
+                        <FriendPanel style={ styles.panel } token={ token } contacts={ contacts } refreshContacts={ refreshContacts }
+                                     trackedFriend={ trackedFriend }
+                                     setTrackedFriend={ setTrackedFriend } friendsTracking={ friendsTracking }
+                                     setFriendsTracking={ setFriendsTracking } trackFriend={ locationRequest }/> }
 
-                <MapWebview trackedFriend={ trackedFriend } setTrackedFriend={ setTrackedFriend } token={ token } setAcceptedTracking={ setAcceptedTracking }/>
+                <MapWebview trackedFriend={ trackedFriend } setTrackedFriend={ setTrackedFriend } token={ token }
+                            setAcceptedTracking={ setAcceptedTracking }/>
 
-                { friendsTracking.length > 0 && 
-                    <FAB //Stop getting tracked button
-                        style={ styles.stopGettingTrackedButton }
-                        icon={ { type: "material", name: "location-disabled", color: "white" } }
-                        color="red"
-                        onPress={ stopGettingTracked }
-                    />
+                { friendsTracking.length > 0 &&
+                        <FAB //Stop getting tracked button
+                                style={ styles.stopGettingTrackedButton }
+                                icon={ { type: "material", name: "location-disabled", color: "white" } }
+                                color="red"
+                                onPress={ stopGettingTracked }
+                        />
                 }
 
             </SafeAreaView>
