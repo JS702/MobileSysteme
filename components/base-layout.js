@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Button, View, TextInput } from "react-native";
+import { SafeAreaView, StyleSheet, View, TextInput, Text, ImageBackground, TouchableWithoutFeedback, Keyboard } from "react-native";
 import FriendPanel from "./friend-panel";
 import MapWebview from "./map/map-webview";
 import { FAB } from "@rneui/themed";
@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useInterval } from "../common/useIntervall";
 import * as Contacts from "expo-contacts";
 import { transformNumber } from "../common/transformNumber";
+import { Icon } from "@rneui/themed";
 
 const BaseLayout = () => {
 
@@ -155,10 +156,27 @@ const BaseLayout = () => {
 
     if ( !token ) {
         return (
-                <View style={ { marginTop: "20%" } }>
-                    <TextInput value={ phoneNumber } onChangeText={ setPhoneNumber }></TextInput>
-                    <Button title={ "Abschicken" } onPress={ login }/>
-                </View> );
+                <SafeAreaView style={{ flex: 1}}>
+                    <TouchableWithoutFeedback onPress={ () => {Keyboard.dismiss()} }>
+                        <ImageBackground source={require("../background.png")} resizeMode="cover" style={{ flex: 1 }}>
+                            <View style={ styles.greetingContainer }>
+                                <Text style={ styles.greetingHeader }> Welcome!</Text>
+                                <Text style={ styles.greetingText }>Please enter your phone number so your friends are able to request your location:</Text>
+                                <View style={ styles.inputContainer }>
+                                    <TextInput style={ styles.phoneInput } value={ phoneNumber } onChangeText={ setPhoneNumber } placeholder="+49123456789 / 0123456789" placeholderTextColor={"#d3d3d3"}></TextInput>
+                                    <View style={{ transform: [{ rotate: `45deg` }] }}>
+                                        <Icon
+                                            type="feather"
+                                            name="send"
+                                            color="white"
+                                            onPress={ login }
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                        </ImageBackground>
+                    </TouchableWithoutFeedback>
+                </SafeAreaView> );
     }
 
     return (
@@ -199,6 +217,40 @@ const styles = StyleSheet.create( {
     baseLayout: {
         flex: 1,
         zIndex: 0
+    },
+    greetingContainer: {
+        marginTop: "20%",
+        marginLeft: "5%",
+        marginRight: "5%",
+        padding: "5%",
+        backgroundColor: "#00000088",
+        borderRadius: 10
+    },
+    greetingHeader: {
+        textAlign: "center",
+        fontSize: 60,
+        color: "white"
+    },
+    greetingText: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "white",
+    },
+    inputContainer: {
+        flexDirection: "row",
+        borderWidth: 2,
+        borderColor: "#b3b3b3",
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: "5%"
+    },
+    phoneInput: {
+        marginTop: 0,
+        textAlign: "center",
+        color: "white",
+        fontSize: 16,
+        width: "88%"
     },
     panel: {
         position: "absolute",
