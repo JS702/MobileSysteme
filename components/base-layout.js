@@ -121,10 +121,10 @@ const BaseLayout = () => {
     return (
             <SafeAreaView style={ styles.baseLayout }>
                 <FAB //Friends Button
-                        style={ styles.friendsButton }
-                        icon={ { type: "ionicons", name: "people", color: "white" } }
-                        color="green"
-                        onPress={ togglePanel }
+                    style={ styles.friendsButton }
+                    icon={ { type: "ionicons", name: "people", color: "white" } }
+                    color={ showSidePanel ? "red" : "green" }
+                    onPress={ togglePanel }
                 />
                 <RequestPopup style={ styles.popup } modalVisible={ modalVisible } syncRequests={ pendingSyncRequests }
                               acceptRequest={ acceptRequest } request={ pendingSyncRequests[ 0 ] }/>
@@ -135,7 +135,14 @@ const BaseLayout = () => {
 
                 <MapWebview trackedFriend={ trackedFriend } setTrackedFriend={ setTrackedFriend } token={ token } setAcceptedTracking={ setAcceptedTracking }/>
 
-                { friendsTracking.length > 0 && <Button title={ "Stop getting Tracked" } onPress={ stopGettingTracked }/> }
+                { friendsTracking.length > 0 && 
+                    <FAB //Stop getting tracked button
+                        style={ styles.stopGettingTrackedButton }
+                        icon={ { type: "material", name: "location-disabled", color: "white" } }
+                        color="red"
+                        onPress={ stopGettingTracked }
+                    />
+                }
 
             </SafeAreaView>
     );
@@ -162,8 +169,17 @@ const styles = StyleSheet.create( {
         height: 50,
         width: 50,
         zIndex: 1
+    },
+    stopGettingTrackedButton: {
+        position: "absolute",
+        right: 0,
+        top: 60,
+        marginRight: 10,
+        marginTop: 10,
+        height: 50,
+        width: 50,
+        zIndex: 1
     }
-
 } );
 
 export default BaseLayout;
