@@ -127,7 +127,8 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
               L.latLng(${ startLat }, ${ startLon }),
               L.latLng(${ endLat }, ${ endLon })
             ],
-            createMarker: function() { return null; }
+            createMarker: function() { return null; },
+            pointMarkerStyle: {radius: 5,color: '#03f',fillColor: 'green',opacity: 0,fillOpacity: 0}
           }).addTo(map);
           routingControl.hide();
         ` );
