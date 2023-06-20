@@ -278,11 +278,8 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
                 setOwnLocation( { lat: ownLat, lng: ownLng } );
 
                 if ( token ) {
-                    const response = await axiosInstance.post( "/users/update-user-location", { latitude: ownLat, longitude: ownLng },
+                    await axiosInstance.post( "/users/update-user-location", { latitude: ownLat, longitude: ownLng },
                             { headers: { Authorization: "Bearer " + token } } );
-                    if ( response.data && response.data.length > 0 ) {
-                        setSyncRequests( response.data );
-                    }
                 }
 
             } catch ( err ) {

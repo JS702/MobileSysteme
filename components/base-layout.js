@@ -21,8 +21,6 @@ const BaseLayout = () => {
 
     const [ modalVisible, setModalVisible ] = useState( false );
 
-    const [ syncRequests, setSyncRequests ] = useState( [] );
-
     const [ pendingSyncRequests, setPendingSyncRequests ] = useState( [] );
 
     const [ trackedFriend, setTrackedFriend ] = useState( null );
@@ -64,7 +62,7 @@ const BaseLayout = () => {
     };
 
     const getContactNameByNumber = ( number ) => {
-        const contact = contacts.find( contact => transformNumber( contact.phoneNumbers[ 0 ].number ) === number );
+        const contact = contacts?.find( contact => transformNumber( contact.phoneNumbers[ 0 ].number ) === number );
         return contact ? contact.name : number;
     };
 
@@ -86,8 +84,9 @@ const BaseLayout = () => {
             const response = await axiosInstance.get( "/permission/get-request-from-friend",
                     { headers: { Authorization: "Bearer " + token } } );
             if ( response.data && response.data.length > 0 ) {
-                setSyncRequests( response.data );
                 setPendingSyncRequests( response.data.filter( request => request.status === "pending" ) );
+                const friendsTracking = response.data.filter( request => request.status === "accepted" );
+                setFriendsTracking( friendsTracking?.map( friend => ( { number: friend.telefon, id: friend._id } ) ) );
             }
         }
     }, 10000 );
@@ -98,7 +97,7 @@ const BaseLayout = () => {
                     { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
                 if ( r.data.status === "accepted" ) {
                     setAcceptedTracking( true );
-                    setTrackedFriend( { number: trackedFriend.number, status: "accepted" } );
+                    setTrackedFriend( { number: trackedFriend.number, id: trackedFriend._id, status: "accepted" } );
                 }
                 if ( r.data.status === "declined" ) {
                     setTrackedFriend( null );
@@ -110,7 +109,7 @@ const BaseLayout = () => {
     const locationRequest = ( number ) => {
         axiosInstance.post( "/permission/permission-request", { friendsTelefon: number },
                 { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
-            setTrackedFriend( { number: number, status: r.data.status } );
+            setTrackedFriend( { number: number, status: r.data.status, id: r.data._id } );
         } );
     };
 

@@ -9,6 +9,7 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
     const [ isTracked, setIsTracked ] = useState( false );
 
     const [ isTracking, setIsTracking ] = useState( false );
+
     useEffect( () => {
         if ( trackedFriend?.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ) {
             setIsTracked( true );
@@ -21,13 +22,18 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
         if ( friendsTracking?.length > 0 &&
                 friendsTracking.filter( friend => friend.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) ).length > 0 ) {
             setIsTracking( true );
+        } else {
+            setIsTracking( false );
         }
     }, [ friendsTracking ] );
 
 
     const stopTracking = () => {
-        setTrackedFriend( null );
-        setIsTracked( false );
+        axiosInstance.post( "/permission/decline-request", { id: trackedFriend.id }, { headers: { Authorization: "Bearer " + token } } )
+                .then( () => {
+                    setTrackedFriend( null );
+                    setIsTracked( false );
+                } );
     };
 
 
