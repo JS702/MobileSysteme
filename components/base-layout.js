@@ -196,7 +196,7 @@ const BaseLayout = () => {
                                      setFriendsTracking={ setFriendsTracking } trackFriend={ locationRequest }/> }
 
                 <MapWebview trackedFriend={ trackedFriend } setTrackedFriend={ setTrackedFriend } token={ token }
-                            setAcceptedTracking={ setAcceptedTracking }/>
+                            setAcceptedTracking={ setAcceptedTracking } getContactNameByNumber={ getContactNameByNumber }/>
 
                 { friendsTracking.length > 0 &&
                         <FAB //Stop getting tracked button

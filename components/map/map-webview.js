@@ -13,7 +13,7 @@ const FRIEND_MARKER = "friendMarker";
 
 const toleratedDeviation = 0.02; //0.01 Kilometer = 10 Meter
 
-const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracking } ) => {
+const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracking, getContactNameByNumber } ) => {
 
     const mapRef = useRef( null );
 
@@ -223,7 +223,7 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
     useEffect( () => {
         if (!firstRender) {
             if (!friendMarkerAdded) {
-                addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng, "Hallo" );
+                addMarker( FRIEND_MARKER, friendLocation.lat, friendLocation.lng, getContactNameByNumber( trackedFriend.number ) );
                 changeMarkerColor( FRIEND_MARKER, "Red");
                 updateRoutingWaypoints();
                 setFriendMarkerAdded( true );
