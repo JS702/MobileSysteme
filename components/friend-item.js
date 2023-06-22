@@ -38,8 +38,8 @@ const FriendItem = ( { friendData, trackedFriend, setTrackedFriend, friendsTrack
 
 
     const stopGettingTracked = () => {
-        const friend = friendsTracking.filter( friend => friend.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) );
-        axiosInstance.post( "/permission/decline-request", { id: friend._id }, { headers: { Authorization: "Bearer " + token } } );
+        const friend = friendsTracking.find( friend => friend.number === transformNumber( friendData.phoneNumbers[ 0 ].number ) );
+        axiosInstance.post( "/permission/decline-request", { id: friend.requestId }, { headers: { Authorization: "Bearer " + token } } );
         setFriendsTracking( friendsTracking.filter( friend => friend.number !== transformNumber( friendData.phoneNumbers[ 0 ].number ) ) );
         setIsTracking( false );
     };

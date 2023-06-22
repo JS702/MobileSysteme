@@ -97,7 +97,7 @@ const BaseLayout = () => {
                     { headers: { Authorization: "Bearer " + token } } ).then( ( r ) => {
                 if ( r.data.status === "accepted" ) {
                     setAcceptedTracking( true );
-                    setTrackedFriend( { number: trackedFriend.number, id: trackedFriend._id, status: "accepted" } );
+                    setTrackedFriend( { number: trackedFriend.number, id: trackedFriend.id, status: "accepted" } );
                 }
                 if ( r.data.status === "declined" ) {
                     setTrackedFriend( null );
