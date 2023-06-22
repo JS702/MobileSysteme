@@ -86,7 +86,7 @@ const BaseLayout = () => {
             if ( response.data && response.data.length > 0 ) {
                 setPendingSyncRequests( response.data.filter( request => request.status === "pending" ) );
                 const friendsTracking = response.data.filter( request => request.status === "accepted" );
-                setFriendsTracking( friendsTracking?.map( friend => ( { number: friend.telefon, id: friend._id } ) ) );
+                setFriendsTracking( friendsTracking?.map( friend => ( { number: friend.user, requestId: friend._id } ) ) );
             }
         }
     }, 10000 );

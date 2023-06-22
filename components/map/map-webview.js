@@ -266,7 +266,7 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
         setAcceptedTracking( false );
     }
         
-    }, 10000 );
+    }, 6000 );
 
     useInterval( async () => {
         var ownLat;
