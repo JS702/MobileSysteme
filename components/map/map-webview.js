@@ -289,25 +289,6 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
         }
     }, 10000 );
 
-
-    /** DEBUG FUNCTIONS */
-
-    const latSliderHandler = ( value ) => {
-        setLatSliderValue( value );
-        setFriendLocation( {
-            lat: value,
-            lng: friendLocation.lng
-        } );
-    };
-
-    const lngSliderHandler = ( value ) => {
-        setLngSliderValue( value );
-        setFriendLocation( {
-            lat: friendLocation.lat,
-            lng: value
-        } );
-    };
-
     return (
             <>
                 <StatusBar barStyle="dark-content"/>
@@ -376,29 +357,6 @@ const MapWebview = ( { trackedFriend, setTrackedFriend, token, setAcceptedTracki
                             } }
                     /> }
                 </SafeAreaView>
-
-                {/* DEBUG BUTTONS*/ }
-                <Button title="Remove" onPress={ () => {
-                    if (friendMarkerAdded) {
-                        removeMarker( FRIEND_MARKER );
-                        removeRoute();
-                        setFriendMarkerAdded( false );
-                    }
-                } }/>
-                <Slider
-                        value={ latSliderValue }
-                        onValueChange={ ( value ) => latSliderHandler( value ) }
-                        minimumValue={ -90 }
-                        maximumValue={ 90 }
-                        step={ 1 }
-                />
-                <Slider
-                        value={ lngSliderValue }
-                        onValueChange={ ( value ) => lngSliderHandler( value ) }
-                        minimumValue={ -180 }
-                        maximumValue={ 180 }
-                        step={ 1 }
-                />
             </>
     );
 };
