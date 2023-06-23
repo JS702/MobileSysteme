@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, TextInput, Text, ImageBackground, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { SafeAreaView, StyleSheet, View, TextInput, Text, ImageBackground, TouchableWithoutFeedback, Keyboard, Image } from "react-native";
 import FriendPanel from "./friend-panel";
 import MapWebview from "./map/map-webview";
 import { FAB } from "@rneui/themed";
@@ -12,6 +12,8 @@ import { transformNumber } from "../common/transformNumber";
 import { Icon } from "@rneui/themed";
 
 const BaseLayout = () => {
+
+    const [ isLoading, setIsLoading ] = useState( true );
 
     const [ token, setToken ] = useState( null );
 
@@ -76,6 +78,7 @@ const BaseLayout = () => {
         if ( token != null ) {
             setToken( token );
         }
+        setIsLoading( false )
     }
 
 
@@ -152,8 +155,11 @@ const BaseLayout = () => {
         }
     }, [ pendingSyncRequests ] );
 
+    if ( isLoading ) {
+        return  <ImageBackground source={require("../assets/splashScreen.jpg")} resizeMode="contain" style={{ flex: 1 }}/>
+        }
 
-    if ( !token ) {
+    if ( !token && !isLoading ) {
         return (
                 <SafeAreaView style={{ flex: 1}}>
                     <TouchableWithoutFeedback onPress={ () => {Keyboard.dismiss()} }>
