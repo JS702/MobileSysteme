@@ -1,6 +1,5 @@
 import axios from "axios";
 
-export default axios.create( {
-    //baseURL: "https://amaranth-monkey-tam.cyclic.app/api",
-    baseURL: "http://[HOSTNAME]:5000/api"
-} );
+export default axios.create({
+  baseURL: "http://amaranth-monkey-tam.cyclic.app/api",
+});
