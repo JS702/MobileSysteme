@@ -119,14 +119,15 @@ const MapWebview = ({
   };
 
   const addMarker = (name, lat, lon, popupText) => {
+    //name = ownMarker / friendMarker
     if (popupText == undefined) {
       mapRef.current.injectJavaScript(`setTimeout(() => {
-                var ${name} = L.marker([${lat}, ${lon}]).addTo(map);
+                ${name} = L.marker([${lat}, ${lon}]).addTo(map);
             }, 100);
             `);
     } else {
       mapRef.current.injectJavaScript(`setTimeout(() => {
-                var ${name} = L.marker([${lat}, ${lon}]).addTo(map).bindPopup('<p align="center"> ${popupText} </p>');
+                ${name} = L.marker([${lat}, ${lon}]).addTo(map).bindPopup('<p align="center"> ${popupText} </p>');
             }, 100);
             `);
     }

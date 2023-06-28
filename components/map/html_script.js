@@ -54,6 +54,8 @@ const html_script = `
 	const ownMarker = L.marker([51.5, -0.09]).addTo(map)
 		.bindPopup('<p align="center">You</p>');
 
+	var friendMarker = null;
+
 	var routingControl = null;
 
 </script>
